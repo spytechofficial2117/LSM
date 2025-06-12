@@ -1,7 +1,4 @@
-import { faBriefcaseMedical } from "@fortawesome/free-solid-svg-icons";
 import React, {useState, useEffect} from "react";
-
-
 function FilterPanel( {onApplyFilters, onResetFilters, onClose, initialBranch, initialYear}){
     const [branch, setBranch]=useState(initialBranch);  
     const [year, setYear]= useState(initialYear);
