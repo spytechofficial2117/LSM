@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFire , faPenToSquare, faCertificate} from '@fortawesome/free-solid-svg-icons';
 // --- Dummy Data (Kept for structure) ---
 const dummyStudentData = {
-    name: 'John Doe',
+    name: 'Default name',
     email: 'johndoe@gmail.com',
     phone: '9077887743',
     imageUrl: 'https://placehold.co/100x100/A8F374/333?text=JD',

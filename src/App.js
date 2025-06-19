@@ -6,6 +6,8 @@ import SearchBar from './searchBar';
 import maleprofile from './assets/images/male-profile.jpg';
 import './StudentCard.css';
 import './FilterPanel.css';
+import StudentDashboard from './StudentDashboardcom';
+import './StudentDashboard.css';
 
 const students=[
   {
@@ -39,6 +41,8 @@ function App() {
   const [searchResults, setSearchResults]=useState([]);
   const [searchQuery, setSearchQuery]= useState('');
 
+  const [selectedStudent, setselectedStudent]= useState(null);
+
   useEffect(()=>{
     let filtered= students;
     if(appliedBranch !== 'All'){
@@ -66,9 +70,27 @@ const handleApplyFilters= (branch, year)=>{
   setAppliedBranch(branch);
   setAppliedYear(year);
 };
+
+const handleStudentCardClick= (student)=> {
+  setselectedStudent(student);
+}
+
+const handleBackToList =() =>{
+  setselectedStudent(null);
+}
+
   return (
     <div className="app-container">
-      <Header />
+      {selectedStudent ? (
+        <>
+        <button onClick={handleBackToList} className='back-button'>
+          &larr;
+        </button>
+        <StudentDashboard />
+        </>
+      ): (
+        <>
+        <Header />
       <h1 className='portal-title'>Student Search Portal</h1>
       <div className="main-content">
         <SearchBar 
@@ -82,7 +104,7 @@ const handleApplyFilters= (branch, year)=>{
         <div className="student-grid">
           { searchResults.length >0 ? (
              searchResults.map((student,index)=>(
-            <Studentcard key={student.id || index} student={student}/>
+            <Studentcard key={student.id || index} student={student} onClick={handleStudentCardClick}/>
           ))
         ):(
           <div className="no-results-message">
@@ -91,6 +113,8 @@ const handleApplyFilters= (branch, year)=>{
         )}
         </div>
       </div>
+      </>
+      )}
       </div>
   );
 }
