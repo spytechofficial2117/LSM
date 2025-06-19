@@ -1,8 +1,14 @@
 import React from "react";
-function Studentcard({student}){
+function Studentcard({student, onClick }){
     const { name, id, branch, year, rank, imageUrl}=student;
+     const handleCardClick = () => {
+        // Call the onClick prop, passing the entire student object back to the parent (App.js)
+        if (onClick) { // Ensure onClick prop is provided before calling it
+            onClick(student);
+        }
+    };
     return (
-        <div className="student-card">
+        <div className="student-card" onClick={handleCardClick}>
             {name ?(
                 <>
                 <div className="student-image-container">
