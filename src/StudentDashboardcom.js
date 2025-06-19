@@ -65,12 +65,36 @@ const MetricCard = ({ label, value, icon, iconBgClass, iconTextClass }) => (
     </div>
 );
 
-function StudentDashboard({ student = dummyStudentData }) {
+function StudentDashboard({ student: propStudent, onBack }) { // Receive onBack prop
+    // Merge the actual student data with dummy data to ensure all properties exist
+    // Properties from propStudent will override dummyStudentData
+    const student = {
+        ...dummyStudentData,
+        ...propStudent,
+        // For nested objects/arrays, you might need deeper merges if partial updates are expected
+        // For now, assuming if propStudent has a key like 'successFailData', it's the complete one.
+        successFailData: propStudent.successFailData || dummyStudentData.successFailData,
+        marksSummary: propStudent.marksSummary || dummyStudentData.marksSummary,
+        questionsAttempted: propStudent.questionsAttempted || dummyStudentData.questionsAttempted,
+        learningProgress: {
+            ...dummyStudentData.learningProgress,
+            ...(propStudent.learningProgress || {})
+        },
+        activitiesData: propStudent.activitiesData || dummyStudentData.activitiesData,
+    };
+
     // COLORS variable is necessary for PieChart
     const COLORS = student.successFailData.map(d => d.color);
 
     return (
         <div className="dashboard-container">
+            {/* Back Button - now inside the dashboard component */}
+            {onBack && (
+                <button onClick={onBack} className='back-button'>
+                    &larr;
+                </button>
+            )}
+
             {/* Top Header Section */}
             <header>
                 <div className="header-logo">LOGO</div>
@@ -244,7 +268,7 @@ function StudentDashboard({ student = dummyStudentData }) {
                             <span className="progress-value">{student.learningProgress.longestStreak}</span>
                         </div>
                         <div className="progress-item">
-                            <div className="progress-icon-circle blue"> 
+                            <div className="progress-icon-circle blue">
                                <FontAwesomeIcon icon={faCertificate} style={{fontSize:'30px', color:'#74C0FC'}} />
                             </div>
                             <span className="progress-label">Certificates</span>

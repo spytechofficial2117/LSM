@@ -16,20 +16,20 @@ const students=[
   },
   {id : '009', name: 'jose', branch: 'EEE',year: '4th year',
     rank:'#3',imageUrl:maleprofile
-  }, 
+  },
   { id: '003', name: 'Bob', branch: 'MECH', year: '4th year',
-     rank: '#3', imageUrl: maleprofile 
+     rank: '#3', imageUrl: maleprofile
   },
 
-   { id: '005', name: 'Diana', branch: 'CSE', year: '1st year', 
+   { id: '005', name: 'Diana', branch: 'CSE', year: '1st year',
     rank: '#5', imageUrl: maleprofile},
 
    {id:'123', name:'ramesh' , branch:'CSE', year:'2nd year',
       rank: '#10', imageUrl:maleprofile},
-    {id: '021', name: 'Harry', branch: 'CSE', year: '4th year', 
-        rank: '#9', imageUrl: maleprofile}, 
+    {id: '021', name: 'Harry', branch: 'CSE', year: '4th year',
+        rank: '#9', imageUrl: maleprofile},
     { id: '008', name: 'Grace', branch: 'ECE', year: '1st year',
-     rank: '#8', imageUrl: maleprofile}, 
+     rank: '#8', imageUrl: maleprofile},
      {id: '007', name: 'Frank', branch: 'MECH', year: '3rd year',
        rank: '#7', imageUrl: maleprofile },
      {id: '002', name: 'Alice', branch: 'CSE', year: '2nd year', rank: '#2', imageUrl: maleprofile }
@@ -42,6 +42,7 @@ function App() {
   const [searchQuery, setSearchQuery]= useState('');
 
   const [selectedStudent, setselectedStudent]= useState(null);
+  const [showDashboard, setShowDashboard] = useState(false); // New state for controlling dashboard visibility and animation
 
   useEffect(()=>{
     let filtered= students;
@@ -53,13 +54,22 @@ function App() {
     }
     if(searchQuery){
       const lowerCaseQuery= searchQuery.toLowerCase();
-      filtered=filtered.filter(student => 
+      filtered=filtered.filter(student =>
                 student.name.toLowerCase().includes(lowerCaseQuery) ||
                 student.id.toLowerCase().includes(lowerCaseQuery)
       );
     }
    setSearchResults(filtered);
  } , [appliedBranch, appliedYear , searchQuery]);
+
+ // Effect to manage dashboard animation classes
+ useEffect(() => {
+   if (selectedStudent) {
+     setShowDashboard(true); // When a student is selected, set showDashboard to true
+   } else {
+     setShowDashboard(false); // When no student is selected, hide dashboard immediately
+   }
+ }, [selectedStudent]);
 
  const handleresetFilters= ()=> {
         setAppliedBranch('All');
@@ -81,41 +91,43 @@ const handleBackToList =() =>{
 
   return (
     <div className="app-container">
-      {selectedStudent ? (
+      {selectedStudent && ( // Render the dashboard only if a student is selected
         <>
-        <button onClick={handleBackToList} className='back-button'>
-          &larr;
-        </button>
-        <StudentDashboard />
-        </>
-      ): (
-        <>
-        <Header />
-      <h1 className='portal-title'>Student Search Portal</h1>
-      <div className="main-content">
-        <SearchBar 
-        onApplyFilters={handleApplyFilters}
-        onResetFilters={handleresetFilters}
-        currentBranch={appliedBranch}
-        currentYear={appliedYear}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        />
-        <div className="student-grid">
-          { searchResults.length >0 ? (
-             searchResults.map((student,index)=>(
-            <Studentcard key={student.id || index} student={student} onClick={handleStudentCardClick}/>
-          ))
-        ):(
-          <div className="no-results-message">
-            <p>No students found matching the applied filters.</p>
+          <div className={`student-dashboard-wrapper ${showDashboard ? 'enter-active' : 'enter'}`}>
+            {/* Pass selectedStudent AND handleBackToList to dashboard */}
+            <StudentDashboard student={selectedStudent} onBack={handleBackToList} />
           </div>
-        )}
-        </div>
-      </div>
-      </>
+        </>
       )}
-      </div>
+
+      {!selectedStudent && ( // Render the search and grid when no student is selected
+        <>
+          <Header />
+          <h1 className='portal-title'>Student Search Portal</h1>
+          <div className="main-content">
+            <SearchBar
+              onApplyFilters={handleApplyFilters}
+              onResetFilters={handleresetFilters}
+              currentBranch={appliedBranch}
+              currentYear={appliedYear}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+            <div className="student-grid">
+              { searchResults.length > 0 ? (
+                searchResults.map((student,index)=>(
+                  <Studentcard key={student.id || index} student={student} onClick={handleStudentCardClick}/>
+                ))
+              ):(
+                <div className="no-results-message">
+                  <p>No students found matching the applied filters.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 export default App;
