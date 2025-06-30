@@ -12,7 +12,7 @@ const CustomSelect = ({ label, options, value, onChange, className, error }) => 
 
     const handleOptionClick = (optionValue) => {
         // Simulate an event object like a native <select> onChange
-        onChange({ target: { value: optionValue } });
+        onChange(optionValue);
         setIsOpen(false); // Close the dropdown after selection
     };
 

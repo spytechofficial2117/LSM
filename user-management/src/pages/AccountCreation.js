@@ -44,19 +44,19 @@ const ManualEntry = ({
                 label="Role"
                 options={["Select user role", "Student", "Faculty", "Staff"]}
                 value={manualEntryRole} // Select value is controlled by parent state
-                onChange={(e) => setManualEntryRole(e.target.value)} // Updates parent state
+                onChange={(value) => setManualEntryRole(value)} // Updates parent state
             />
             <CustomSelect
                 label="Department"
                 options={["Select Department", "Computer Science", "Mathematics", "Engineering", "Biology", "Arts", "Administration"]}
                 value={manualEntryDepartment} // Select value is controlled by parent state
-                onChange={(e) => setManualEntryDepartment(e.target.value)} // Updates parent state
+                onChange={(value) => setManualEntryDepartment(value)} // Updates parent state
             />
             <CustomSelect
                 label="Year"
                 options={generateYears()} // Options generated here
                 value={manualEntryYear} // Select value is controlled by parent state
-                onChange={(e) => setManualEntryYear(e.target.value)} // Updates parent state
+                onChange={(value) => setManualEntryYear(value)} // Updates parent state
             />
         </div>
     );
@@ -100,7 +100,7 @@ const UploadFile = ({ selectedFile, handleFileChange, handleUpload }) => (
 // --- START: AccountCreation Component Definition ---
 const AccountCreation = () => {
     const [activeTab, setActiveTab] = useState('manual');
-    const [previewUsers] = useState([
+    const [previewUsers, setPreviewUsers] = useState([
         { name: 'Ethan Harper', email: 'ethan.harper@example.com', role: 'Student', department: 'Computer Science', year: 'Sophomore', status: 'Valid' },
         { name: 'Olivia Bennett', email: 'olivia.bennett@example.com', role: 'Teacher', department: 'Engineering', year: 'N/A', status: 'Valid' },
         { name: 'Liam Carter', email: 'liam.carter@example.com', role: 'Student', department: 'Arts', year: 'Freshman', status: 'Duplicate' },
@@ -113,6 +113,54 @@ const AccountCreation = () => {
     const [manualEntryRole, setManualEntryRole] = useState('Select user role');
     const [manualEntryDepartment, setManualEntryDepartment] = useState('Select department');
     const [manualEntryYear, setManualEntryYear] = useState('');
+
+
+    // function for creating account
+    const handleCreateAccount = () => {
+        console.log({
+    manualEntryName,
+    manualEntryEmail,
+    manualEntryRole,
+    manualEntryDepartment,
+    manualEntryYear
+});
+    if (
+        manualEntryName.trim() &&
+        manualEntryEmail.trim() &&
+        manualEntryRole !== 'Select user role' &&
+        manualEntryDepartment !== 'Select department' &&
+        manualEntryYear !== 'Select year'
+    ) {
+        const newUser = {
+            name: manualEntryName,
+            email: manualEntryEmail,
+            role: manualEntryRole,
+            department: manualEntryDepartment,
+            year: manualEntryYear,
+        };
+        setPreviewUsers(prev => [...prev, newUser]);
+        // Reset form
+        setManualEntryName('');
+        setManualEntryEmail('');
+        setManualEntryRole('Select user role');
+        setManualEntryDepartment('Select department');
+        setManualEntryYear('');
+    } else {
+        alert('Please fill out all fields correctly.');
+    }
+};
+//handle cancel button action
+
+const handleCancel = () => {
+  // Clear manual input fields
+  setManualEntryName('');
+  setManualEntryEmail('');
+  setManualEntryRole('Select user role');
+  setManualEntryDepartment('Select department');
+  setManualEntryYear('');
+
+  // Clear selected file
+};
 
     // Handlers for UploadFile component
     const handleFileChange = (e) => {
@@ -171,11 +219,12 @@ const AccountCreation = () => {
 
             <div className="preview-section">
                 <h2 className="preview-title">Preview</h2>
+                <div className="preview-scroll-wrapper">
                 <div className="table-wrapper">
                     <table className="data-table">
                         <thead>
                             <tr>
-                                {['Name', 'Email', 'Role', 'Department', 'Year', 'Status'].map(header => (
+                                {['Name', 'Email', 'Role', 'Department', 'Year'].map(header => (
                                     <th key={header}>{header}</th>
                                 ))}
                             </tr>
@@ -188,21 +237,22 @@ const AccountCreation = () => {
                                     <td>{user.role}</td>
                                     <td>{user.department}</td>
                                     <td>{user.year}</td>
-                                    <td>
+                                    {/* <td>
                                         <span className={`status ${user.status === 'Valid' ? 'status-valid' : 'status-warning'}`}>
                                             {user.status}
                                         </span>
-                                    </td>
+                                    </td> */}
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+                </div>
             </div>
 
             <div className="action-buttons">
-                <button className="btn-secondary">Cancel</button>
-                <button className="btn-confirm">Create Accounts</button>
+                <button className="btn-secondary" onClick={handleCancel}>Cancel</button>
+                <button className="btn-confirm" onClick={handleCreateAccount}>Create Accounts</button>
             </div>
         </div>
     );
