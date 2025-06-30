@@ -15,6 +15,9 @@ const PermissionModifications = () => {
     const [permissionDepartment, setPermissionDepartment]= useState('Select Department');
     const [permissionYear, setPermissionYear]= useState('Select year');
 
+    //for filtering data
+     const [filteredUsers, setFilteredUsers] = useState([]);
+
     // Add handlers for these state updates
     const handlePermissionRoleChange = (e) => {
         setPermissionRole(e.target.value);
@@ -97,6 +100,34 @@ const PermissionModifications = () => {
     };
 
     const permissions = ["View-only", "Edit Access", "Admin control"];
+     useEffect(() => {
+        let currentFilteredUsers = mockUsers; // Start with all mock users
+
+        // Apply Role filter
+        if (permissionRole !== 'Select user role') {
+            currentFilteredUsers = currentFilteredUsers.filter(user => user.role === permissionRole);
+        }
+
+        // Apply Department filter
+        // Note: Make sure "Computer Science" matches casing in mockData
+        if (permissionDepartment !== 'Select Department') {
+            currentFilteredUsers = currentFilteredUsers.filter(user => user.department === permissionDepartment);
+        }
+
+        // Apply Year filter
+        if (permissionYear !== 'Select year') {
+            currentFilteredUsers = currentFilteredUsers.filter(user => {
+                // Handle "N/A" for year, and ensure comparison is consistent
+                return user.year === permissionYear || (permissionYear === "N/A" && user.year === "N/A");
+            });
+        }
+
+        setFilteredUsers(currentFilteredUsers);
+
+        // This is important to prevent selected users from disappearing but remaining selected
+        setSelectedUsers([]);
+
+    }, [permissionRole, permissionDepartment, permissionYear]);
 
     return (
         <div className="permission-mod-page">
@@ -139,14 +170,16 @@ const PermissionModifications = () => {
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" onChange={(e) => {
+                                <th><input type="checkbox"
+                                 onChange={(e) => {
                                     if (e.target.checked) {
-                                        setSelectedUsers(mockUsers.slice(0, 6).map(u => u.id));
+                                        setSelectedUsers(filteredUsers.map(u=> u.id));
                                     } else {
                                         setSelectedUsers([]);
                                     }
                                 }}
-                                checked={selectedUsers.length === mockUsers.slice(0, 6).length && mockUsers.slice(0, 6).length > 0}
+                                checked={selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length}
+                                disabled={filteredUsers.length ===0}
                                 /></th>
                                 {['Name', 'Role', 'Department', 'Year'].map(header => (
                                     <th key={header}>{header}</th>
@@ -154,7 +187,8 @@ const PermissionModifications = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {mockUsers.slice(0, 6).map((user) => (
+                            {filteredUsers.length > 0 ?(
+                            filteredUsers.map((user) => (
                                 <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected-row' : ''}>
                                     <td>
                                         <input
@@ -168,7 +202,12 @@ const PermissionModifications = () => {
                                     <td>{user.department}</td>
                                     <td>{user.year}</td>
                                 </tr>
-                            ))}
+                            ))
+                        ): (
+                            <tr>
+                                <td colSpan='5' style={{textAlign: 'center', padding: '20px'}} >No users found matching the selected filters.</td>
+                            </tr>
+                        )}
                         </tbody>
                     </table>
                 </div>

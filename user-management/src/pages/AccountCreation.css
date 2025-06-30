@@ -138,8 +138,9 @@ body * {
 .data-table {
     width: 100%; 
     border-collapse: collapse; 
-    background-color: #7d8332; 
-}
+    /* background-color: #7d8332;  */
+    background-color: white;
+}                         /*no color */
 
 .data-table th,
 .data-table td {
