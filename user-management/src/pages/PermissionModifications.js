@@ -19,14 +19,14 @@ const PermissionModifications = () => {
      const [filteredUsers, setFilteredUsers] = useState([]);
 
     // Add handlers for these state updates
-    const handlePermissionRoleChange = (e) => {
-        setPermissionRole(e.target.value);
+    const handlePermissionRoleChange = (value) => {
+        setPermissionRole(value);
     };
-    const handlePermissionDepartmentChange = (e) => {
-        setPermissionDepartment(e.target.value);
+    const handlePermissionDepartmentChange = (value) => {
+        setPermissionDepartment(value);
     };
-    const handlePermissionYearChange = (e) => {
-    const year = e.target.value;
+    const handlePermissionYearChange = (value) => {
+    const year = value;
     setPermissionYear(year);
     };
 
