@@ -3,8 +3,8 @@ import './AccountCreation.css';
 import PageTitle from '../components/ui/PageTitle';
 import TabButton from '../components/ui/TabButton';
 import FormInput from '../components/ui/FormInput';
-import FormSelect from '../components/ui/FormSelect';
-
+// import FormSelect from '../components/ui/FormSelect';
+import CustomSelect from '../components/ui/CustomSelect';
 const AccountCreation = () => {
     const [activeTab, setActiveTab] = useState('manual');
     const [previewUsers] = useState([
@@ -14,6 +14,12 @@ const AccountCreation = () => {
     ]);
 
     const [selectedFile, setSelectedFile] = useState(null);
+
+    const [manualEntryName, setManualEntryName] = useState('');
+    const [manualEntryEmail, setManualEntryEmail] = useState('');
+    const [manualEntryRole, setManualEntryRole] = useState('Select user role'); // Default value
+    const [manualEntryDepartment, setManualEntryDepartment] = useState('Select department'); // Default value
+    const [manualEntryYear, setManualEntryYear] = useState('');
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -26,17 +32,58 @@ const AccountCreation = () => {
             // Add actual upload or CSV parsing logic here
         }
     };
+     const handleNameChange = (e) => {
+        setManualEntryName(e.target.value);
+    };
+     const handleEmailChange = (e) => {
+        setManualEntryEmail(e.target.value);
+    };
+      const handleRoleChange = (e) => { // This handler will now be used by CustomSelect
+        setManualEntryRole(e.target.value);
+    };
 
+    const handleDepartmentChange = (e) => { // This handler will now be used by CustomSelect
+        setManualEntryDepartment(e.target.value);
+    };
+    const handleYearChange = (e) => {
+    const year = e.target.value;
+    setManualEntryYear(year);
+    };
+
+    const generateYears = () => {
+        const currentYear = new Date().getFullYear();
+        const years = ["Select year", "N/A"];
+        for (let i = currentYear; i >= currentYear - 50; i--) { // Generates years from current year down to 100 years ago
+            years.push(String(i));
+        }
+        return years;
+    };
     const ManualEntry = () => (
         <div className="form-grid">
-            <FormInput label="Name" placeholder="Enter user's full name" />
-            <FormInput label="Email" placeholder="Enter user's email address" />
-            <FormSelect label="Role" options={["Select user role", "Student", "Faculty", "Staff"]} />
-            <FormSelect label="Department" options={["Select department", "Computer Science", "Mathematics", "Engineering", "Biology", "Arts", "Administration"]} />
-            <FormSelect label="Year" options={["Select year", "2023", "2024", "2025", "N/A"]} />
-            <div className="button-row">
-                <button className="btn-primary">Add user</button>
-            </div>
+            <FormInput label="Name" placeholder="Enter user's full name"  value={manualEntryName} onChange={handleNameChange}/>
+            <FormInput label="Email" placeholder="Enter user's email address" value={manualEntryEmail} onChange={handleEmailChange}/>
+            {/* <FormSelect label="Role" options={["Select user role", "Student", "Faculty", "Staff"]} />
+            <FormSelect label="Department" options={["Select department", "Computer Science", "Mathematics", "Engineering", "Biology", "Arts", "Administration"]} /> */}
+            {/* <FormSelect label="Year" options={["Select year", "2023", "2024", "2025", "N/A"]} /> */}
+            <CustomSelect
+                label="Role"
+                options={["Select user role", "Student","Faculty","Staff"]}
+                value={manualEntryRole}
+                onChange={handleRoleChange}
+            />
+            <CustomSelect
+                label="Department"
+                options={["Select Department","computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
+                value={manualEntryDepartment}
+                onChange={handleDepartmentChange}
+                />
+            <CustomSelect
+                label="Year"
+                options={generateYears()}
+                value={manualEntryYear}
+                onChange={handleYearChange}
+                // className="year-select" // No longer needed for CustomYearSelect itself for width control
+            />
         </div>
     );
 
