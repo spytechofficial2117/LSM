@@ -1,5 +1,23 @@
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
 .account-creation {
     padding: 1rem; 
+}
+
+.account-creation,
+.main-content {
+  overflow: visible !important;
+  height: auto !important;
 }
 
 .tab-header {
@@ -191,4 +209,9 @@
 
 .btn-confirm:hover {
     background-color: #b9d01f; /* Darker shade of primary */
+}
+
+.decorative-circle {
+  position: absolute;
+  z-index: 0;
 }

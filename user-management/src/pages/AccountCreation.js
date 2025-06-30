@@ -12,7 +12,6 @@ const AccountCreation = () => {
         { name: 'Olivia Bennett', email: 'olivia.bennett@example.com', role: 'Teacher', department: 'Engineering', year: 'N/A', status: 'Valid' },
         { name: 'Liam Carter', email: 'liam.carter@example.com', role: 'Student', department: 'Arts', year: 'Freshman', status: 'Duplicate' },
     ]);
-
     const [selectedFile, setSelectedFile] = useState(null);
 
     const handleFileChange = (e) => {
@@ -23,7 +22,6 @@ const AccountCreation = () => {
     const handleUpload = () => {
         if (selectedFile) {
             alert(`Uploading: ${selectedFile.name}`);
-            // Add actual upload or CSV parsing logic here
         }
     };
 
