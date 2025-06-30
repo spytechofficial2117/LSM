@@ -1,0 +1,155 @@
+import React, { useState, useEffect } from 'react';
+import './PermissionModifications.css';
+import PageTitle from '../components/ui/PageTitle';
+import FormSelect from '../components/ui/FormSelect';
+import { mockUsers } from '../data/mockData';
+
+const PermissionModifications = () => {
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectedPermissions, setSelectedPermissions] = useState([]);
+    // State to store assigned permissions for each user
+    // e.g., { u1: ['View-only'], u2: ['Edit Access'] }
+    const [userPermissions, setUserPermissions] = useState({});
+
+    const toggleUserSelection = (id) => {
+        setSelectedUsers(prev =>
+            prev.includes(id) ? prev.filter(userId => userId !== id) : [...prev, id]
+        );
+    };
+
+    const togglePermissionSelection = (permission) => {
+        setSelectedPermissions(prev =>
+            prev.includes(permission) ? prev.filter(p => p !== permission) : [...prev, permission]
+        );
+    };
+
+    // Effect to update selected permissions when selected users change
+    useEffect(() => {
+        if (selectedUsers.length === 0) {
+            setSelectedPermissions([]);
+            return;
+        }
+
+        if (selectedUsers.length === 1) {
+            const userId = selectedUsers[0];
+            setSelectedPermissions(userPermissions[userId] || []);
+            return;
+        }
+
+        // For multiple users, find the intersection of their permissions
+        const firstUserPermissions = userPermissions[selectedUsers[0]] || [];
+        const commonPermissions = firstUserPermissions.filter(permission =>
+            selectedUsers.slice(1).every(userId =>
+                (userPermissions[userId] || []).includes(permission)
+            )
+        );
+        setSelectedPermissions(commonPermissions);
+
+    }, [selectedUsers, userPermissions]);
+
+
+    const handleApplyChanges = () => {
+        if (selectedUsers.length === 0) {
+            alert('Please select at least one user.');
+            return;
+        }
+
+        // Apply the currently selected permissions to all selected users
+        setUserPermissions(prevPermissions => {
+            const newPermissions = { ...prevPermissions };
+            selectedUsers.forEach(userId => {
+                newPermissions[userId] = [...selectedPermissions];
+            });
+            return newPermissions;
+        });
+
+        alert(`Applying the following permissions: ${selectedPermissions.join(', ') || 'None'} to ${selectedUsers.length} user(s).`);
+
+        // ADDED: Reset the permission selection buttons to their default state
+        setSelectedPermissions([]);
+        // ADDED: Unselect all users after applying changes
+        setSelectedUsers([]);
+    };
+
+    const permissions = ["View-only", "Edit Access", "Admin control"];
+
+    return (
+        <div className="permission-mod-page">
+            <PageTitle
+                title="Permission Modifications"
+                subtitle="Modify permissions for selected users."
+            />
+
+            <div className="filter-box">
+                <h3 className="filter-title">Filter Users</h3>
+                <div className="filter-grid">
+                    <FormSelect label="Role" options={["Select Role", "Student", "Faculty", "Staff"]} />
+                    <FormSelect label="Department" options={["Select Department", "Computer Science", "Mathematics", "Engineering"]} />
+                    <FormSelect label="Year" options={["Select Year", "2023", "2024", "2025"]} />
+                </div>
+            </div>
+
+            <div className="user-table-wrapper">
+                <h3 className="section-title">Select Users</h3>
+                <div className="table-container">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" onChange={(e) => {
+                                    if (e.target.checked) {
+                                        setSelectedUsers(mockUsers.slice(0, 6).map(u => u.id));
+                                    } else {
+                                        setSelectedUsers([]);
+                                    }
+                                }}
+                                checked={selectedUsers.length === mockUsers.slice(0, 6).length && mockUsers.slice(0, 6).length > 0}
+                                /></th>
+                                {['Name', 'Role', 'Department', 'Year'].map(header => (
+                                    <th key={header}>{header}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {mockUsers.slice(0, 6).map((user) => (
+                                <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected-row' : ''}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedUsers.includes(user.id)}
+                                            onChange={() => toggleUserSelection(user.id)}
+                                        />
+                                    </td>
+                                    <td>{user.name}</td>
+                                    <td>{user.role}</td>
+                                    <td>{user.department}</td>
+                                    <td>{user.year}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div className="permission-controls">
+                <h3 className="section-title">Assign/Revoke Permissions</h3>
+                <div className="permission-buttons">
+                    {permissions.map(permission => (
+                        <button
+                            key={permission}
+                            className={`btn ${selectedPermissions.includes(permission) ? 'btn-selected' : 'btn-secondary'}`}
+                            onClick={() => togglePermissionSelection(permission)}
+                        >
+                            {permission}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="action-buttons">
+                <button className="btn-confirm" onClick={handleApplyChanges}>Apply changes</button>
+            </div>
+        </div>
+    );
+};
+
+export default PermissionModifications;

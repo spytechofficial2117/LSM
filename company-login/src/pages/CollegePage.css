@@ -1,0 +1,218 @@
+.college-page {
+    min-height: calc(100vh - 3rem - 80px);
+    background-color: #FEFEFA;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2rem;
+}
+
+.college-container {
+    max-width: 48rem;
+    width: 100%;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    background-color: #FEFEFA;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.college-title {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #151603;
+    margin-bottom: 1rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    .filter-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: block;
+    color: #151603;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+}
+
+.input-field {
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #FEFEFA;
+    color: #151603;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #CBE220;
+    box-shadow: 0 0 0 3px rgba(203, 226, 32, 0.2);
+}
+
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-wrapper select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 2.5rem;
+}
+
+.select-wrapper .select-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6B7280;
+}
+
+.filter-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background-color: #CBE220;
+    color: #151603;
+}
+
+.btn-primary:hover {
+    background-color: #BADA1E;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary {
+    background-color: #56E9B3;
+    color: #151603;
+}
+
+.btn-secondary:hover {
+    background-color: #4ADAA2;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.filter-buttons .btn-primary,
+.filter-buttons .btn-secondary {
+    flex-grow: 1;
+    max-width: 180px;
+}
+
+@media (min-width: 480px) {
+    .filter-buttons .btn-primary,
+    .filter-buttons .btn-secondary {
+        flex-grow: 0;
+    }
+}
+
+.search-results-section {
+    margin-top: 2.5rem;
+}
+
+.results-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #151603;
+    margin-bottom: 1.25rem;
+}
+
+.results-table-container {
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background-color: #FEFEFA;
+}
+
+.results-table {
+    min-width: 700px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.results-table th,
+.results-table td {
+    padding: 1.1rem 1.5rem;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.results-table th {
+    background-color: #EBF374;
+    font-weight: 600;
+    color: #151603;
+    font-size: 0.9rem;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.results-table th:first-child {
+    border-top-left-radius: 0.75rem;
+}
+
+.results-table th:last-child {
+    border-top-right-radius: 0.75rem;
+}
+
+.results-table tr:last-child td {
+    border-bottom: none;
+}
+
+.results-table tr:hover {
+    background-color: rgba(203, 226, 32, 0.1);
+}
+
+.no-results-message {
+    text-align: center;
+    padding: 2rem;
+    color: #6B7280;
+    font-size: 1rem;
+}

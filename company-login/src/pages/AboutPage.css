@@ -1,0 +1,110 @@
+.about-page {
+    min-height: calc(100vh - 3rem - 80px);
+    background-color: #FEFEFA;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
+
+.about-container {
+    max-width: 36rem;
+    width: 100%;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    background-color: #FEFEFA;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.about-title {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #151603;
+    margin-bottom: 1rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    color: #151603;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+}
+
+.input-field {
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #FEFEFA;
+    color: #151603;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #CBE220;
+    box-shadow: 0 0 0 3px rgba(203, 226, 32, 0.2);
+}
+
+.contact-form textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+.submit-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-primary {
+    background-color: #CBE220;
+    color: #151603;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background-color: #BADA1E;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #CBE220;
+    box-shadow: none;
+}
+
+.contact-info-section {
+    margin-top: 2.5rem;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.contact-info-section p {
+    margin-bottom: 0.5rem;
+}
