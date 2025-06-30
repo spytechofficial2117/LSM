@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './PermissionModifications.css';
 import PageTitle from '../components/ui/PageTitle';
-import FormSelect from '../components/ui/FormSelect';
+// import FormSelect from '../components/ui/FormSelect';
+import CustomSelect from '../components/ui/CustomSelect';
 import { mockUsers } from '../data/mockData';
 
 const PermissionModifications = () => {
@@ -10,6 +11,30 @@ const PermissionModifications = () => {
     // State to store assigned permissions for each user
     // e.g., { u1: ['View-only'], u2: ['Edit Access'] }
     const [userPermissions, setUserPermissions] = useState({});
+    const [permissionRole, setPermissionRole]= useState('Select user role');
+    const [permissionDepartment, setPermissionDepartment]= useState('Select Department');
+    const [permissionYear, setPermissionYear]= useState('Select year');
+
+    // Add handlers for these state updates
+    const handlePermissionRoleChange = (e) => {
+        setPermissionRole(e.target.value);
+    };
+    const handlePermissionDepartmentChange = (e) => {
+        setPermissionDepartment(e.target.value);
+    };
+    const handlePermissionYearChange = (e) => {
+    const year = e.target.value;
+    setPermissionYear(year);
+    };
+
+    const generateYears = () => {
+        const currentYear = new Date().getFullYear();
+        const years = ["Select year", "N/A"];
+        for (let i = currentYear; i >= currentYear - 50; i--) { // Generates years from current year down to 100 years ago
+            years.push(String(i));
+        }
+        return years;
+    };
 
     const toggleUserSelection = (id) => {
         setSelectedUsers(prev =>
@@ -83,9 +108,28 @@ const PermissionModifications = () => {
             <div className="filter-box">
                 <h3 className="filter-title">Filter Users</h3>
                 <div className="filter-grid">
-                    <FormSelect label="Role" options={["Select Role", "Student", "Faculty", "Staff"]} />
+                    {/* <FormSelect label="Role" options={["Select Role", "Student", "Faculty", "Staff"]} />
                     <FormSelect label="Department" options={["Select Department", "Computer Science", "Mathematics", "Engineering"]} />
-                    <FormSelect label="Year" options={["Select Year", "2023", "2024", "2025"]} />
+                    <FormSelect label="Year" options={["Select Year", "2023", "2024", "2025"]} /> */}
+            <CustomSelect
+                label="Role"
+                options={["Select user role", "Student","Faculty","Staff"]}
+                value={permissionRole}
+                onChange={handlePermissionRoleChange}
+            />
+            <CustomSelect
+                label="Department"
+                options={["Select Department","computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
+                value={permissionDepartment}
+                onChange={handlePermissionDepartmentChange}
+                />
+            <CustomSelect
+                label="Year"
+                options={generateYears()}
+                value={permissionYear}
+                onChange={handlePermissionYearChange}
+                // className="year-select" // No longer needed for CustomYearSelect itself for width control
+            />
                 </div>
             </div>
 
