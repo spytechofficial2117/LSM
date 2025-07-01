@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import './BatchUpdates.css';
 import PageTitle from '../components/ui/PageTitle';
 import CustomSelect from '../components/ui/CustomSelect'; // Using CustomSelect instead of FormSelect
@@ -45,6 +45,7 @@ const BulkEditInterface = ({
     setSelectedSectionFilter,
     selectedRoleFilter,
     setSelectedRoleFilter,
+    filteredUsers,
 }) => {
     const searchContainerRef = useRef(null);
 
@@ -61,13 +62,13 @@ const BulkEditInterface = ({
                         label="Department"
                         options={dynamicDropdownOptions.Department}
                         value={selectedDepartmentFilter} // Assuming a state for this in parent
-                        onChange={(e) => setSelectedDepartmentFilter(e.target.value)} // Assuming a handler
+                        onChange={(value) => setSelectedDepartmentFilter(value)} // Assuming a handler
                     />
                     <CustomSelect
                         label="Year"
                         options={dynamicDropdownOptions.Year}
                         value={selectedYearFilter} // Assuming a state for this in parent
-                        onChange={(e) => setSelectedYearFilter(e.target.value)} // Assuming a handler
+                        onChange={(value) => setSelectedYearFilter(value)} // Assuming a handler
                     />
                     <CustomSelect
                         label="Section"
@@ -75,13 +76,13 @@ const BulkEditInterface = ({
                         // If not, you can provide static options or omit.
                         options={dynamicDropdownOptions.Section}
                         value={selectedSectionFilter} // Assuming a state for this in parent
-                        onChange={(e) => setSelectedSectionFilter(e.target.value)} // Assuming a handler
+                        onChange={(value) => setSelectedSectionFilter(value)} // Assuming a handler
                     />
                     <CustomSelect
                         label="Role"
                         options={dynamicDropdownOptions.Role}
                         value={selectedRoleFilter} // Assuming a state for this in parent
-                        onChange={(e) => setSelectedRoleFilter(e.target.value)} // Assuming a handler
+                        onChange={(value) => setSelectedRoleFilter(value)} // Assuming a handler
                     />
                 </div>
 
@@ -198,6 +199,40 @@ const BulkEditInterface = ({
 
 // --- Component 2: Upload Sheet Interface ---
 const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownOptions }) => {
+     const [isDragging, setIsDragging] = useState(false);
+
+    // Drag and drop event handlers
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            // Call the parent's handleFileChange with a synthetic event object
+            // to mimic the behavior of a regular file input change.
+            handleFileChange({ target: { files: e.dataTransfer.files } });
+        }
+    };
+
+
+
     // This component now directly handles the parsing and updates the parent's state
     const handleInternalUpload = () => {
         if (!selectedFile) {
@@ -281,7 +316,12 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
         <div>
             <div className="upload-box">
                 <h3 className="filter-title">Upload CSV or Excel File</h3>
-                <label className="upload-dropzone">
+                <label className= {`upload-dropzone ${isDragging? 'dragging' : ''}`}
+                  onDragEnter={handleDragEnter}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
                     <input
                         type="file"
                         accept=".csv,.xlsx"
@@ -358,14 +398,43 @@ const BatchUpdates = () => {
     const [selectedSectionFilter, setSelectedSectionFilter] = useState('Select Section');
     const [selectedRoleFilter, setSelectedRoleFilter] = useState('Select Role');
 
+    //new state for filters
+    const[filteredUsers, setFilteredUsers]= useState(mockUsers);
+
+    //useEffect for filter users 
+    useEffect( ()=>{
+         let currentFilteredUsers = mockUsers;
+
+        if (selectedDepartmentFilter !== 'Select Department') {
+            currentFilteredUsers = currentFilteredUsers.filter(user =>
+                user.department === selectedDepartmentFilter
+            );
+        }
+        if (selectedYearFilter !== 'Select Year') {
+            currentFilteredUsers = currentFilteredUsers.filter(user =>
+                String(user.year) === selectedYearFilter 
+            );
+        }
+        if (selectedSectionFilter !== 'Select Section') {
+            currentFilteredUsers = currentFilteredUsers.filter(user =>
+                user.section === selectedSectionFilter
+            );
+        }
+        if (selectedRoleFilter !== 'Select Role') {
+            currentFilteredUsers = currentFilteredUsers.filter(user =>
+                user.role === selectedRoleFilter
+            );
+        }
+
+        setFilteredUsers(currentFilteredUsers);
+    }, [selectedDepartmentFilter, selectedYearFilter, selectedSectionFilter, selectedRoleFilter]); 
 
     const handleSearch = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
 
         if (query.trim().length > 0) {
-            const filtered = mockUsers.filter(user =>
-                !selectedUsers.includes(user.id) &&
+            const filtered = filteredUsers.filter(user=>!selectedUsers.includes(user.id) &&
                 (
                     user.name.toLowerCase().includes(query.toLowerCase()) ||
                     user.email.toLowerCase().includes(query.toLowerCase())

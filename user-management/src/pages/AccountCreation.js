@@ -66,12 +66,51 @@ const ManualEntry = ({
 
 // --- START: UploadFile Component Definition ---
 // Define UploadFile as a top-level component for consistent structure
-const UploadFile = ({ selectedFile, handleFileChange, handleUpload }) => (
+const UploadFile = ({ selectedFile, handleFileChange, handleUpload }) => {
+    const [isDragging, setIsDragging]= useState('false');
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevents the browser's default behavior (e.g., opening the file)
+        setIsDragging(true);
+    };
+
+    // Event handler for when a draggable item is over the dropzone
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevents the browser's default behavior
+        // setIsDragging(true); // Redundant if already set in dragEnter, but harmless
+    };
+
+    // Event handler for when a draggable item leaves the dropzone
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    // Event handler for when a draggable item is dropped on the dropzone
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false); // Reset dragging state
+
+        // Check if files were dropped
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            // Call the parent's handleFileChange with a synthetic event object
+            // to mimic the behavior of a regular file input change.
+            handleFileChange({ target: { files: e.dataTransfer.files } });
+        }
+    };
+    return( 
     <div className="upload-box">
         <p className="upload-description">
             Upload a CSV or Excel file to create multiple accounts at once. Ensure the file includes columns for Name, Email, Role, Department, and Year.
         </p>
-        <label className="upload-dropzone">
+        <label className={`upload-dropzone ${isDragging ? 'dragging' : ''}`}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}>
             <input
                 type="file"
                 accept=".csv,.xlsx"
@@ -93,7 +132,8 @@ const UploadFile = ({ selectedFile, handleFileChange, handleUpload }) => (
             </div>
         )}
     </div>
-);
+    );
+};
 // --- END: UploadFile Component Definition ---
 
 
