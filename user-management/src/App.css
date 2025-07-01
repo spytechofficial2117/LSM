@@ -1,12 +1,18 @@
-/* App.css */
+/* Root setup */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
 
-/* --- Root Variables --- */
+/* Variables */
 :root {
-    --sidebar-width-open: 18rem; /* Your existing sidebar width */
-    --sidebar-width-closed-visual: 0; /* Sidebar is effectively invisible on desktop when closed */
-    --transition-speed: 0.3s ease-in-out; /* Smooth transition */
+    --sidebar-width-open: 18rem;
+    --sidebar-width-closed-visual: 0;
+    --transition-speed: 0.3s ease-in-out;
+    --fade-speed: 0.2s ease-in-out;
 
-    /* Your existing color variables */
     --color-primary-dark: #151603;
     --color-background-light: #FEFEFA;
     --color-sidebar-gradient-start: #fbffc6;
@@ -14,24 +20,23 @@
     --color-sidebar-link-active: #EBF37480;
     --color-decorative-circle: rgba(235, 243, 116, 0.4);
 
-    --main-content-padding: 2.5rem; /* Existing padding for top/right/bottom */
-    --hamburger-icon-size: 1.5rem; /* From .toggle-icon */
-    --hamburger-button-padding: 0.75rem; /* From .main-content-toggle-btn padding */
-    --reserved-left-space-for-hamburger: calc(var(--hamburger-icon-size) + (var(--hamburger-button-padding) * 2) + 1rem); /* Icon + Button Padding + extra buffer */
+    --main-content-padding: 2.5rem;
+    --hamburger-icon-size: 1.5rem;
+    --hamburger-button-padding: 0.75rem;
+    --reserved-left-space-for-hamburger: calc(var(--hamburger-icon-size) + (var(--hamburger-button-padding) * 2) + 1rem);
 }
 
-/* --- Layout --- */
+/* Layout */
 .app-root {
     display: flex;
-    min-height: 100vh;
-    font-family: sans-serif;
+    min-height: 100%;
     background-color: var(--color-background-light);
     color: var(--color-primary-dark);
     overflow-x: hidden;
     position: relative;
 }
 
-/* Overlay for smaller screens */
+/* Overlay (mobile) */
 .app-root.sidebar-open-overlay::before {
     content: '';
     position: fixed;
@@ -41,63 +46,51 @@
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 90;
-    opacity: 0;
-    visibility: hidden;
+    opacity: 1;
+    visibility: visible;
     transition: opacity var(--transition-speed), visibility var(--transition-speed);
+}
 
-    @media (min-width: 769px) {
+@media (min-width: 769px) {
+    .app-root.sidebar-open-overlay::before {
         display: none;
     }
 }
 
-.app-root.sidebar-open-overlay::before {
-    opacity: 1;
-    visibility: visible;
-}
-
-
-/* --- Sidebar --- */
+/* Sidebar */
 .sidebar {
-    /* Mobile/Overlay behavior (default for small screens) */
     position: fixed;
-    height: 100vh;
     top: 0;
     left: 0;
-    transform: translateX(-100%);
-    transition: transform var(--transition-speed);
-    z-index: 100;
-
-    /* Common sidebar styles (apply to both mobile and desktop) */
+    bottom: 0;
     width: var(--sidebar-width-open);
     background: linear-gradient(to bottom, var(--color-sidebar-gradient-start), var(--color-background-light));
     padding: 2rem 1.5rem;
-    flex-shrink: 0;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+    z-index: 100;
+    transition: transform var(--transition-speed), width var(--transition-speed), padding var(--transition-speed);
+    transform: translateX(-100%);
 }
 
-/* Mobile: Sidebar OPEN */
 .sidebar.open {
     transform: translateX(0);
 }
 
-/* Mobile: Sidebar CLOSED (already off-screen) */
 .sidebar.closed {
     transform: translateX(-100%);
     pointer-events: none;
 }
 
-
-/* --- Desktop-specific Sidebar behavior --- */
+/* Desktop sidebar */
 @media (min-width: 769px) {
     .sidebar {
-        position: static;
-        height: 100%;
-        min-height: 100vh;
+        /* FIXED: Changed to sticky to keep it visible on scroll */
+        position: sticky;
+        top: 0;
+        height: 100vh; /* Set height to viewport for sticky positioning */
         transform: translateX(0);
-        transition: width var(--transition-speed), padding var(--transition-speed);
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
 
     .sidebar.open {
@@ -107,64 +100,53 @@
 
     .sidebar.closed {
         width: var(--sidebar-width-closed-visual);
+        padding: 0;
         overflow: hidden;
         box-shadow: none;
-        padding: 0;
     }
 
-    /* Hide specific elements when sidebar is closed on desktop */
     .sidebar.closed .sidebar-header,
     .sidebar.closed .sidebar-title,
     .sidebar.closed .sidebar-toggle-btn,
     .sidebar.closed .sidebar-links,
     .sidebar.closed .sidebar-link span,
     .sidebar.closed .sidebar-icon {
-        display: none;
         opacity: 0;
-        width: 0;
         pointer-events: none;
+        visibility: hidden;
     }
 }
 
-
-/* Sidebar Header */
+/* Sidebar elements */
 .sidebar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 3rem;
     padding-right: 1.5rem;
+    transition: opacity var(--fade-speed);
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
-/* Sidebar Title */
 .sidebar-title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: var(--color-primary-dark);
-    margin: 0;
     white-space: nowrap;
-    overflow: hidden;
-    opacity: 1;
-    transition: opacity var(--transition-speed);
 }
 
 .sidebar-toggle-btn {
     background: none;
     border: none;
-    color: var(--color-primary-dark);
-    cursor: pointer;
     font-size: 1.8rem;
     padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s ease;
+    cursor: pointer;
+    transition: opacity var(--fade-speed);
 }
 
 .sidebar-toggle-btn:hover {
     color: var(--color-primary-dark);
-    opacity: 80%;
-   margin: 2px solid black;
+    opacity: 0.8;
+    border: 2px solid black;
 }
 
 .sidebar-links {
@@ -172,6 +154,9 @@
     flex-direction: column;
     gap: 1rem;
     flex-grow: 1;
+    transition: opacity var(--fade-speed);
+    /* FIXED: Allow links to scroll if they overflow the sidebar's height */
+    overflow-y: auto;
 }
 
 .sidebar-link {
@@ -182,13 +167,14 @@
     border-radius: 0.5rem;
     background-color: transparent;
     border: none;
-    color: var(--color-primary-dark);
-    cursor: pointer;
     font-size: 0.9rem;
+    cursor: pointer;
     text-align: left;
     transition: background-color 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
+}
+
+.sidebar-link span {
+    transition: opacity var(--fade-speed);
 }
 
 .sidebar-link:hover {
@@ -197,7 +183,6 @@
 
 .sidebar-link.active {
     background-color: var(--color-sidebar-link-active);
-    color: var(--color-primary-dark);
     font-weight: bold;
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
 }
@@ -205,52 +190,35 @@
 .sidebar-icon {
     width: 1.5rem;
     height: 1.5rem;
-    transition: margin-right var(--transition-speed);
     flex-shrink: 0;
+    transition: opacity var(--fade-speed);
 }
 
-.sidebar.closed .sidebar-link span {
-    opacity: 0;
-    width: 0;
-    display: none;
-    transition: opacity var(--transition-speed), width var(--transition-speed);
-    pointer-events: none;
-}
-
-
-/* --- Main content (Adjusted for consistent left padding) --- */
+/* Main content */
 .main-content {
     flex: 1;
-    position: relative;
     overflow-y: auto;
-    transition: padding-left var(--transition-speed); /* Transition padding-left */
-
-    /* Default padding for all sides */
+    position: relative;
     padding: var(--main-content-padding);
+    min-width: 0; /* Prevents flexbox overflow issues */
+}
 
-    /* MODIFIED: Initial padding-left to reserve space for the hamburger icon on desktop */
-    @media (min-width: 769px) {
+@media (min-width: 769px) {
+    .main-content {
         padding-left: var(--reserved-left-space-for-hamburger);
     }
 }
 
-
-.content-inner {
-    position: relative;
-    z-index: 1;
-}
-
-/* Main Content Toggle Button (for opening the sidebar) */
+/* Toggle button */
 .main-content-toggle-btn {
     position: absolute;
     top: var(--main-content-padding);
-    /* MODIFIED: Position the button relative to the reserved space */
-    left: calc(var(--main-content-padding) / 2); /* Half of the top/right/bottom padding for centered look */
+    left: calc(var(--main-content-padding) / 2);
     background-color: var(--color-sidebar-link-active);
     color: var(--color-primary-dark);
     border: none;
     border-radius: 0.5rem;
-    padding: var(--hamburger-button-padding); /* Use variable for button padding */
+    padding: var(--hamburger-button-padding);
     cursor: pointer;
     z-index: 50;
     display: flex;
@@ -258,13 +226,6 @@
     justify-content: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     transition: background-color 0.2s ease, transform 0.2s ease;
-
-    @media (min-width: 769px) {
-        .sidebar.closed + & {
-            display: flex; /* Show it when sidebar is closed */
-        }
-        display: none; /* Hide by default on desktop, unless .sidebar.closed is active */
-    }
 }
 
 .main-content-toggle-btn:hover {
@@ -272,13 +233,13 @@
     transform: scale(1.05);
 }
 
-.main-content-toggle-btn .toggle-icon {
-    width: var(--hamburger-icon-size); /* Use variable */
-    height: var(--hamburger-icon-size); /* Use variable */
+.toggle-icon {
+    width: var(--hamburger-icon-size);
+    height: var(--hamburger-icon-size);
     stroke: var(--color-primary-dark);
 }
 
-/* --- Decorative circles --- */
+/* Decorative */
 .decorative-circle {
     position: absolute;
     background-color: var(--color-decorative-circle);
@@ -300,10 +261,4 @@
     bottom: 0;
     left: 0;
     transform: translate(-25%, 25%);
-}
-
-/* --- Icon common styles --- */
-.toggle-icon {
-    width: 1.5rem;
-    height: 1.5rem;
 }
