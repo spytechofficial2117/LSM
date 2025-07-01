@@ -7,10 +7,10 @@ import { PlusSquareIcon, KeyRoundIcon, RefreshCwIcon, MenuIcon } from './compone
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('accountCreation');
-    const [isSidebarOpen, setIsSidebarOpen]= useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const toggleSidebar = ()=>{
-        setIsSidebarOpen( prev => !prev);
+    const toggleSidebar = () => {
+        setIsSidebarOpen(prev => !prev);
     };
 
     const SidebarLink = ({ pageName, icon, text }) => {
@@ -20,7 +20,7 @@ export default function App() {
                 onClick={() => setCurrentPage(pageName)}
                 className={`sidebar-link ${isActive ? 'active' : ''}`}
             >
-                {React.createElement(icon, { className: 'sidebar-icon' })}
+                {icon && React.createElement(icon, { className: 'sidebar-icon' })}
                 {isSidebarOpen && <span>{text}</span>}
             </button>
         );
@@ -40,14 +40,14 @@ export default function App() {
     };
 
     return (
-       <div className={`app-root ${isSidebarOpen ? 'sidebar-open-overlay' : ''}`}>
+        <div className={`app-root ${isSidebarOpen ? 'sidebar-open-overlay' : ''}`}>
             {/* Sidebar */}
             <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
                 <div className="sidebar-header">
-                <h1 className="sidebar-title"> User Management</h1>
-                <button className='sidebar-toggle-btn' onClick={toggleSidebar}>
-               <MenuIcon className="toggle-icon"></MenuIcon>
-                </button>
+                    <h1 className="sidebar-title">User Management</h1>
+                    <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+                        <MenuIcon className="toggle-icon" />
+                    </button>
                 </div>
                 <nav className="sidebar-links">
                     <SidebarLink pageName="accountCreation" icon={PlusSquareIcon} text="Account creation" />
@@ -57,9 +57,9 @@ export default function App() {
             </aside>
 
             {/* Main Content */}
-             <main className= "main-content">
-                    {!isSidebarOpen && (
-                    <button className="content-toggle-btn" onClick={toggleSidebar}>
+            <main className="main-content">
+                {!isSidebarOpen && (
+                    <button className="main-content-toggle-btn" onClick={toggleSidebar}>
                         <MenuIcon className="toggle-icon" />
                     </button>
                 )}
