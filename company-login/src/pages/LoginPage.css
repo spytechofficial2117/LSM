@@ -71,7 +71,7 @@
 }
 
 .password-input {
-    padding-right: 3rem;
+    padding-right: 2.5rem;
 }
 
 .password-toggle-icon {
@@ -80,6 +80,13 @@
     cursor: pointer;
     color: #6B7280;
     transition: color 0.2s;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .password-toggle-icon:hover {
@@ -87,8 +94,8 @@
 }
 
 .password-toggle-icon svg {
-    height: 1.35rem;
-    width: 1.35rem;
+    height: 100%;
+    width: 100%;
 }
 
 .checkbox-group {

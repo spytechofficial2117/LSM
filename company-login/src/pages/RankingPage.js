@@ -7,12 +7,12 @@ const RankingPage = () => {
     { id: 'r2', rank: 2, name: "Liam Carter", university: "Harvard University", score: 97, createdAt: "2023-02-20" },
     { id: 'r3', rank: 3, name: "Ava Bennett", university: "MIT", score: 96, createdAt: "2023-03-10" },
     { id: 'r4', rank: 4, name: "Ethan Parker", university: "Caltech", score: 95, createdAt: "2023-04-05" },
-    { id: 'r5', name: "Olivia Turner", university: "Princeton University", score: 94, createdAt: "2023-05-25" },
-    { id: 'r6', name: "Noah Walker", university: "University of Chicago", score: 93, createdAt: "2024-01-01" },
-    { id: 'r7', name: "Isabella Hayes", university: "Yale University", score: 92, createdAt: "2024-02-14" },
-    { id: 'r8', name: "Henry Cole", university: "Columbia University", score: 91, createdAt: "2024-03-22" },
-    { id: 'r9', name: "Mia Lewis", university: "Oxford University", score: 90, createdAt: "2024-04-30" },
-    { id: 'r10', name: "James King", university: "Cambridge University", score: 89, createdAt: "2024-05-18" },
+    { id: 'r5',rank:5, name: "Olivia Turner", university: "Princeton University", score: 94, createdAt: "2023-05-25" },
+    { id: 'r6', rank:6, name: "Noah Walker", university: "University of Chicago", score: 93, createdAt: "2024-01-01" },
+    { id: 'r7',rank:7, name: "Isabella Hayes", university: "Yale University", score: 92, createdAt: "2024-02-14" },
+    { id: 'r8', rank:8,name: "Henry Cole", university: "Columbia University", score: 91, createdAt: "2024-03-22" },
+    { id: 'r9',rank:9, name: "Mia Lewis", university: "Oxford University", score: 90, createdAt: "2024-04-30" },
+    { id: 'r10', rank:10,name: "James King", university: "Cambridge University", score: 89, createdAt: "2024-05-18" },
   ];
 
   const [searchTerm, setSearchTerm] = useState('');
