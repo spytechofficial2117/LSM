@@ -1,0 +1,128 @@
+
+.filter-panel {
+    /* Positioning: Crucial for appearing below the search bar */
+    position: absolute;
+    /* Calculate top based on the height of the search bar container + desired spacing */
+    /* Your .search-bar-container has a height of 62px. Add some spacing, e.g., 10px. */
+    top: calc(100% + 10px); /* 100% of .search-bar-wrapper's height + 10px spacing */
+    left: 50%; /* Center horizontally relative to .search-bar-wrapper */
+    transform: translateX(-50%); /* Adjust to truly center it */
+
+    /* Appearance */
+    background-color: #f9f9f9; /* Light grayish-white background */
+    border-radius: 15px; /* More rounded corners as in the image */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle box shadow */
+    padding: 20px;
+    z-index: 20; /* Ensure it appears above other content */
+    width: 465px; /* Adjust width as needed to match the image, or make it responsive */
+    max-width: 90%; /* Max-width for responsiveness, relative to parent (search-bar-wrapper) */
+    box-sizing: border-box; /* Include padding in width calculation */
+    border: 1px solid #eee; /* Optional: Very light border */
+
+    /* Optional: Initial hidden state and transition */
+    /* If you want a fade-in/fade-out effect, manage visibility with a class via JS */
+    /* opacity: 0; */
+    /* visibility: hidden; */
+    /* transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; */
+}
+
+/* If you implement a class to show/hide the panel */
+/* .filter-panel.active {
+    opacity: 1;
+    visibility: visible;
+} */
+
+
+.filter-header {
+    display: flex;
+    justify-content: center; /* Centers the "Filters" text */
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.filter-title {
+    font-size: 1.1rem; /* Slightly larger than standard text */
+    font-weight: 500; /* Medium font weight */
+    color: #333; /* Dark gray text */
+}
+
+.filter-group {
+    margin-bottom: 18px; /* Space between branch and year filter sections */
+}
+
+.filter-label {
+    display: block; /* Ensures label is on its own line */
+    font-size: 0.85rem; /* Smaller font for labels */
+    color: #555; /* Medium gray text */
+    margin-bottom: 6px; /* Space between label and select box */
+}
+
+.filter-select {
+    width: 100%; /* Takes full width of its container */
+    padding: 10px 15px; /* Internal padding */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 8px; /* Rounded input */
+    font-size: 1rem;
+    color: #333;
+    background-color: white; /* Distinct white background for select */
+    -webkit-appearance: none; /* Remove default browser styling for select */
+    -moz-appearance: none;
+    appearance: none;
+    /* Custom arrow icon for select box */
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="%23aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M6 9l6 6 6-6"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center; /* Position arrow on the right */
+    background-size: 14px; /* Size of the arrow */
+    transition: border-color 0.2s ease-in-out; /* Smooth transition on focus */
+}
+
+.filter-select:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #999; /* Darker border on focus */
+    box-shadow: 0 0 0 2px rgba(153, 153, 153, 0.2); /* Subtle glow on focus */
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    justify-content: flex-end; /* Align buttons to the right */
+    margin-top: 15px; /* Space above buttons */
+}
+
+.reset-btn,
+.apply-btn {
+    padding: 10px 18px; /* Padding inside buttons */
+    border: none;
+    border-radius: 8px; /* Rounded corners for buttons */
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out; /* Smooth transitions for hover effects */
+}
+
+.reset-btn {
+    background-color: #e0e0e0; /* Light gray for reset button */
+    color: #555;
+}
+
+.reset-btn:hover {
+    background-color: #d0d0d0; /* Darker gray on hover */
+    color: #333;
+}
+
+.apply-btn {
+    background-color: #4CAF50; /* Green color for apply button (as in image) */
+    color: white;
+}
+
+.apply-btn:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
+
+/* Responsive adjustments if needed for smaller screens */
+@media (max-width: 600px) {
+    .filter-panel {
+        width: 90%; /* Make it take more width on smaller screens */
+    }
+}
+
