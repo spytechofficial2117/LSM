@@ -28,6 +28,8 @@ const CreateTestPage = () => {
         return 'Multiple Choice (Checkboxes)';
       case 'descriptive':
         return 'Descriptive Answer (Text Area)';
+      case 'coding':
+        return 'Coding Question';
       default:
         return 'Unknown Type';
     }
@@ -420,14 +422,37 @@ const CreateTestPage = () => {
                 <div key={q.id} className="question-card">
                   <div className="flex-grow">
                     <p className="question-content">{q.question}</p>
-                    {q.type !== 'descriptive' && (
-                      <ul className="question-options-list">
-                        {q.options.map((opt, index) => (
-                          <li key={index} className={opt.isCorrect ? 'question-option correct' : 'question-option'}>
-                            {opt.text} {opt.isCorrect && '(Correct)'}
-                          </li>
-                        ))}
-                      </ul>
+                 {/* --- CHANGE 2: Conditionally render test cases for coding questions --- */}
+                    {q.type === 'coding' ? (
+                      <div className="coding-question-details">
+                        <h4 className="text-md font-semibold mt-2 mb-1">Test Cases:</h4>
+                        {q.testCases && q.testCases.length > 0 ? (
+                          <ul className="test-case-list">
+                            {q.testCases.map((tc, index) => (
+                              <li key={index} className={`test-case-item ${tc.isHidden ? 'test-case-hidden' : 'test-case-shown'}`}>
+                                <p><strong>Input:</strong> <pre>{tc.input.length > 50 ? tc.input.substring(0, 50) + '...' : tc.input}</pre></p>
+                                <p><strong>Output:</strong> <pre>{tc.output.length > 50 ? tc.output.substring(0, 50) + '...' : tc.output}</pre></p>
+                                <span className={`test-case-status ${tc.isHidden ? 'status-hidden' : 'status-shown'}`}>
+                                  {tc.isHidden ? 'Hidden' : 'Shown'}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-gray-500 text-sm">No test cases defined.</p>
+                        )}
+                      </div>
+                    ) : (
+                      // Existing options rendering for non-coding questions
+                      q.options && q.options.length > 0 && q.type !== 'descriptive' && (
+                        <ul className="question-options-list">
+                          {q.options.map((opt, index) => (
+                            <li key={index} className={opt.isCorrect ? 'question-option correct' : 'question-option'}>
+                              {opt.text} {opt.isCorrect && '(Correct)'}
+                            </li>
+                          ))}
+                        </ul>
+                      )
                     )}
                     <p className="question-meta">Score: {q.score}</p>
                     <p className="question-meta">Type: {getDescriptiveQuestionType(q.type)}</p>
@@ -471,4 +496,4 @@ const CreateTestPage = () => {
   );
 };
 
-export default CreateTestPage;
+export default CreateTestPage;  

@@ -65,6 +65,8 @@
     width: 100%;
     box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
+    height: 2.75rem;
+    line-height: 1.5;
 }
 
 .input-field:focus {
@@ -73,26 +75,32 @@
     box-shadow: 0 0 0 3px rgba(203, 226, 32, 0.2);
 }
 
-.select-wrapper {
-    position: relative;
-    width: 100%;
+.college-page .select-wrapper {
+  position: relative;
+  width: 100%;
 }
 
 .select-wrapper select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    padding-right: 2.5rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 2.5rem; /* space for the arrow */
 }
 
-.select-wrapper .select-arrow {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: #6B7280;
+.college-page .select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-80%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  width: 1.5rem;
+  color: #151603;
 }
+
 
 .filter-buttons {
     display: flex;
@@ -162,6 +170,13 @@
     margin-bottom: 1.25rem;
 }
 
+.no-results-message {
+    text-align: center;
+    padding: 2rem;
+    color: #6B7280;
+    font-size: 1rem;
+}
+
 .results-table-container {
     overflow-x: auto;
     border-radius: 0.75rem;
@@ -208,11 +223,4 @@
 
 .results-table tr:hover {
     background-color: rgba(203, 226, 32, 0.1);
-}
-
-.no-results-message {
-    text-align: center;
-    padding: 2rem;
-    color: #6B7280;
-    font-size: 1rem;
 }
