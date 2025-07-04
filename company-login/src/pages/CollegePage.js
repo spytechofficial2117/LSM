@@ -10,7 +10,7 @@ const CollegePage = () => {
     { id: 's5', name: "Bob White", college: "Example University", department: "Civil Engineering", year: "3rd Year", section: "B" },
   ], []);
 
-  const [collegeName, setCollegeName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [department, setDepartment] = useState('Select department');
   const [year, setYear] = useState('Select year');
   const [section, setSection] = useState('Select section');
@@ -22,17 +22,22 @@ const CollegePage = () => {
 
   const handleApplyFilters = useCallback(() => {
     let filteredStudents = allStudents.filter(student => {
-      const matchesCollege = collegeName ? student.college?.toLowerCase().includes(collegeName.toLowerCase()) : true;
+      
+        // New search logic for name or ID
+      const matchesSearchTerm = searchTerm ? 
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        student.id.toLowerCase().includes(searchTerm.toLowerCase()) 
+        : true;
       const matchesDepartment = department && department !== "Select department" ? student.department === department : true;
       const matchesYear = year && year !== "Select year" ? student.year === year : true;
       const matchesSection = section && section !== "Select section" ? student.section === section : true;
-      return matchesCollege && matchesDepartment && matchesYear && matchesSection;
+      return matchesSearchTerm && matchesDepartment && matchesYear && matchesSection;
     });
     setStudents(filteredStudents);
-  }, [collegeName, department, year, section, allStudents]);
+  }, [searchTerm, department, year, section, allStudents]);
 
   const handleResetFilters = () => {
-    setCollegeName('');
+    setSearchTerm('');
     setDepartment('Select department');
     setYear('Select year');
     setSection('Select section');
@@ -50,14 +55,14 @@ const CollegePage = () => {
 
         <div className="filter-grid">
           <div className="form-field">
-            <label htmlFor="collegeName" className="form-label">College</label>
+            <label htmlFor="collegeName" className="form-label">Search</label>
             <input
               type="text"
               id="collegeName"
               className="input-field"
-              placeholder="Enter college name"
-              value={collegeName}
-              onChange={(e) => setCollegeName(e.target.value)}
+              placeholder="Student name or ID"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="select-wrapper form-field">
@@ -127,6 +132,7 @@ const CollegePage = () => {
               <table className="results-table">
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>College</th>
                     <th>Department</th>
@@ -137,6 +143,7 @@ const CollegePage = () => {
                 <tbody>
                   {students.map(student => (
                     <tr key={student.id}>
+                      <td>{student.id}</td>
                       <td>{student.name}</td>
                       <td>{student.college}</td>
                       <td>{student.department}</td>

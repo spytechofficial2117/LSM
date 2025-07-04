@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './QuestionModal.css'; // Import the dedicated CSS file
+import './QuestionModal.css';
 
 const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit, setAlertConfig }) => {
     const [questionText, setQuestionText] = useState(questionToEdit?.question || '');
@@ -7,13 +7,19 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
     const [options, setOptions] = useState(questionToEdit?.options || [{ text: '', isCorrect: false }]);
     const [score, setScore] = useState(questionToEdit?.score || 2);
 
-    //new state for test cases in coding qns
-    const [testCases, setTestCases] = useState([]);
-    const [problemTitle, setProblemTitle] = useState('');
-    const [difficultyLevel, setDifficultyLevel] = useState('');
+    const [testCases, setTestCases] = useState(questionToEdit?.testCases || []);
+    const [problemTitle, setProblemTitle] = useState(questionToEdit?.problemTitle || '');
+    const [difficultyLevel, setDifficultyLevel] = useState(questionToEdit?.difficultyLevel || '');
 
-    //new state for coding question hints
-    const [hints, setHints] = useState(['', '', '', '', '']);
+    const [hintsEnabled, setHintsEnabled] = useState(
+        questionToEdit?.type === 'coding' && questionToEdit.hints && questionToEdit.hints.length > 0
+            ? true
+            : false
+    );
+    const [hints, setHints] = useState(questionToEdit?.hints || ['', '', '', '', '']);
+
+    const [questionImageFile, setQuestionImageFile] = useState(null); // This holds the actual file object for backend upload
+    const [questionImageURL, setQuestionImageURL] = useState(questionToEdit?.imageUrl || '');
 
     const getDescriptiveQuestionType = (type) => {
         switch (type) {
@@ -27,27 +33,28 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
 
     useEffect(() => {
         if (questionToEdit) {
-            setQuestionText(questionToEdit.question);
-            setQuestionType(questionToEdit.type);
-            setScore(questionToEdit.score);
+            setQuestionText(questionToEdit.question || '');
+            setQuestionType(questionToEdit.type || 'single');
+            setScore(questionToEdit.score || 2);
+            setQuestionImageURL(questionToEdit.imageUrl || '');
+            setQuestionImageFile(null); // Clear file input when editing
+
             if (questionToEdit.type === 'coding') {
                 setTestCases(questionToEdit.testCases || [{ input: '', output: '', isHidden: false }]);
-                setOptions([]); // Clear options if it's a coding question
+                setOptions([]);
                 setProblemTitle(questionToEdit.problemTitle || '');
                 setDifficultyLevel(questionToEdit.difficultyLevel || '');
                 setHints(questionToEdit.hints || ['', '', '', '', '']);
+                setHintsEnabled(questionToEdit.hints && questionToEdit.hints.length > 0 ? true : false);
             } else {
                 setOptions(questionToEdit.options || [{ text: '', isCorrect: false }]);
-                setTestCases([]); // Clear test cases if it's not a coding question
+                setTestCases([]);
                 setProblemTitle('');
                 setDifficultyLevel('');
-
-                // NEW: Reset hints if not a coding question
                 setHints(['', '', '', '', '']);
+                setHintsEnabled(false);
             }
-        }
-        else {
-            // Reset states for a brand new question (when questionToEdit is null)
+        } else {
             setQuestionText('');
             setQuestionType('single');
             setOptions([{ text: '', isCorrect: false }]);
@@ -56,6 +63,9 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
             setProblemTitle('');
             setDifficultyLevel('');
             setHints(['', '', '', '', '']);
+            setHintsEnabled(false);
+            setQuestionImageFile(null);
+            setQuestionImageURL('');
         }
     }, [questionToEdit]);
 
@@ -80,15 +90,14 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
     const removeOption = (indexToRemove) => {
         setOptions(options.filter((_, index) => index !== indexToRemove));
     };
-    // NEW: Test Case Handlers
+
     const handleTestCaseChange = (index, field, value) => {
         const newTestCases = [...testCases];
         newTestCases[index][field] = value;
         setTestCases(newTestCases);
     };
 
-  const addTestCase = () => {
-        // NEW: Limit for test cases
+    const addTestCase = () => {
         if (testCases.length >= 10) {
             setAlertConfig({
                 message: 'Maximum 10 test cases allowed.',
@@ -104,11 +113,49 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
         setTestCases(testCases.filter((_, index) => index !== indexToRemove));
     };
 
-      // NEW: Handler for Hints
     const handleHintChange = (index, value) => {
         const newHints = [...hints];
+        while (newHints.length < 5) {
+            newHints.push('');
+        }
         newHints[index] = value;
         setHints(newHints);
+    };
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                setAlertConfig({
+                    message: 'Please upload an image file (e.g., JPG, PNG, GIF).',
+                    type: 'alert',
+                    onConfirm: () => setAlertConfig(null)
+                });
+                setQuestionImageFile(null);
+                setQuestionImageURL('');
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) { // Max 2MB
+                 setAlertConfig({
+                    message: 'Image size should not exceed 2MB.',
+                    type: 'alert',
+                    onConfirm: () => setAlertConfig(null)
+                });
+                setQuestionImageFile(null);
+                setQuestionImageURL('');
+                return;
+            }
+
+            setQuestionImageFile(file);
+            setQuestionImageURL(URL.createObjectURL(file)); // For immediate client-side preview
+        }
+    };
+
+    const removeImage = () => {
+        setQuestionImageFile(null);
+        setQuestionImageURL('');
+        document.getElementById('questionImage').value = null;
     };
 
     const handleSubmitQuestion = () => {
@@ -121,7 +168,6 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
             return;
         }
 
-        // NEW: Score validation - re-added from previous suggestions
         if (score <= 0) {
             setAlertConfig({
                 message: 'Score must be a positive number.',
@@ -149,9 +195,8 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                 return;
             }
         }
-        // NEW: Validation for coding questions
+
         if (questionType === 'coding') {
-            // NEW: Problem Title validation
             if (!problemTitle.trim()) {
                 setAlertConfig({
                     message: 'Coding questions must have a problem title.',
@@ -160,16 +205,16 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                 });
                 return;
             }
-            // NEW: Difficulty Level validation (optional, but good if it's mandatory)
-            if (!difficultyLevel) { // Checks for empty string
-                setAlertConfig({
-                    message: 'Please select a difficulty level for the coding question.',
-                    type: 'alert',
-                    onConfirm: () => setAlertConfig(null)
-                });
-                return;
-            }
-
+            // this is commented to make selection of difficulty level as optional
+            
+            // if (!difficultyLevel) {
+            //     setAlertConfig({
+            //         message: 'Please select a difficulty level for the coding question.',
+            //         type: 'alert',
+            //         onConfirm: () => setAlertConfig(null)
+            //     });
+            //     return;
+            // }
 
             const validTestCases = testCases.filter(tc => tc.input.trim() !== '' || tc.output.trim() !== '');
             if (validTestCases.length === 0) {
@@ -181,20 +226,39 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                 return;
             }
         }
+
         const newQuestion = {
             id: questionToEdit?.id || `q-${Date.now()}`,
             question: questionText,
             type: questionType,
             score: score,
-            options: questionType === 'descriptive' || questionType === 'coding' ? [] : options,
-            testCases: questionType === 'coding' ? testCases : [],
+            imageUrl: questionImageURL, // This stores the URL for display
         };
 
         if (questionType === 'coding') {
             newQuestion.problemTitle = problemTitle;
             newQuestion.difficultyLevel = difficultyLevel;
-            newQuestion.hints = hints.filter(hint => hint.trim() !== '');
+            newQuestion.testCases = testCases;
+            newQuestion.hints = hintsEnabled ? hints.filter(hint => hint.trim() !== '') : [];
+        } else {
+            newQuestion.options = options;
         }
+
+        // In a full-stack application, 'questionImageFile' would be sent to the backend here
+        // using FormData, and the 'imageUrl' would be updated with the permanent URL from the server.
+        // Example (conceptual):
+        /*
+        if (questionImageFile) {
+            const formData = new FormData();
+            formData.append('image', questionImageFile);
+            // formData.append('questionData', JSON.stringify(newQuestion));
+            // await fetch('/api/upload-question-with-image', { method: 'POST', body: formData })
+            // .then(response => response.json())
+            // .then(data => {
+            //     newQuestion.imageUrl = data.uploadedImageUrl; // Update with actual server URL
+            // });
+        }
+        */
 
         if (questionToEdit) {
             updateQuestion(newQuestion);
@@ -218,34 +282,33 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                             className="input-field"
                             value={questionType}
                             onChange={(e) => {
-                                const newType = e.target.value; // Capture the new value
+                                const newType = e.target.value;
                                 setQuestionType(newType);
-                                if (newType === 'single') {
-                                    setOptions([{ text: '', isCorrect: true }]);
-                                    setTestCases([]);
-                                    setProblemTitle('');
-                                    setDifficultyLevel('');
-                                    setHints(['', '', '', '', '']);
-                                } else if (newType === 'multiple') {
+                                // Reset fields based on new question type
+                                if (newType === 'single' || newType === 'multiple') {
                                     setOptions([{ text: '', isCorrect: false }]);
                                     setTestCases([]);
                                     setProblemTitle('');
                                     setDifficultyLevel('');
                                     setHints(['', '', '', '', '']);
+                                    setHintsEnabled(false);
                                 } else if (newType === 'descriptive') {
                                     setOptions([]);
                                     setTestCases([]);
                                     setProblemTitle('');
                                     setDifficultyLevel('');
                                     setHints(['', '', '', '', '']);
-                                }
-                                else if (newType === 'coding') {
+                                    setHintsEnabled(false);
+                                } else if (newType === 'coding') {
                                     setOptions([]);
                                     setTestCases([{ input: '', output: '', isHidden: false }]);
                                     setProblemTitle('');
                                     setDifficultyLevel('');
                                     setHints(['', '', '', '', '']);
+                                    setHintsEnabled(false);
                                 }
+                                setQuestionImageFile(null);
+                                setQuestionImageURL('');
                             }}
                         >
                             <option value="single">{getDescriptiveQuestionType('single')}</option>
@@ -269,7 +332,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                         className="input-field score-input"
                         value={score}
                         onChange={(e) => setScore(Number(e.target.value))}
-                        min="1" // Added min attribute for better UX/validation
+                        min="1"
                     />
                 </div>
 
@@ -282,6 +345,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                         value={questionText}
                         onChange={(e) => setQuestionText(e.target.value)}
                     ></textarea>
+                    {/* Placeholder for rich text editor if implemented */}
                     <div className="rich-text-placeholder">
                         <input type="checkbox" id="fontBIU" className="hidden" readOnly checked />
                         <label htmlFor="fontBIU" className="rich-text-checkbox-label">
@@ -293,12 +357,47 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                             font BIU (Placeholder for rich text options)
                         </label>
                     </div>
+
+                    {/* Image Upload Section */}
+                    {questionType === 'coding' &&(
+                    <div className="image-upload-section">
+                        <label htmlFor="questionImage" className="form-label">Attach Image (Optional)</label>
+                        <input
+                            type="file"
+                            id="questionImage"
+                            className="hidden-file-input"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => document.getElementById('questionImage').click()}
+                            className="btn-secondary upload-image-button"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Upload Image
+                        </button>
+                        {questionImageURL && (
+                            <div className="image-preview mt-4">
+                                <img src={questionImageURL} alt="Question Preview" className="max-w-full h-auto rounded-md shadow-md" />
+                                <button
+                                    type="button"
+                                    onClick={removeImage}
+                                    className="btn-danger-sm mt-2"
+                                >
+                                    Remove Image
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    )}
                 </div>
 
-                {/* MODIFIED: Conditional Rendering for Options or Test Cases */}
+                {/* Conditional Rendering for Options or Coding Question Details */}
                 {questionType === 'coding' ? (
                     <div className="coding-problem-details-section">
-                        {/* NEW: Problem Title Input */}
                         <div>
                             <label htmlFor="problemTitle" className="form-label">Problem Title</label>
                             <input
@@ -311,17 +410,15 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                             />
                         </div>
 
-                        {/* NEW: Difficulty Level Select */}
                         <div>
                             <label htmlFor="difficultyLevel" className="form-label">Difficulty Level</label>
-                            <div className="select-wrapper"> {/* Reusing select-wrapper for consistent styling */}
+                            <div className="select-wrapper">
                                 <select
                                     id="difficultyLevel"
                                     className="input-field"
                                     value={difficultyLevel}
                                     onChange={(e) => setDifficultyLevel(e.target.value)}
                                 >
-                                    {/* NEW: Added disabled placeholder option */}
                                     <option value="" disabled>Select Difficulty</option>
                                     <option value="Easy">Easy</option>
                                     <option value="Medium">Medium</option>
@@ -335,24 +432,42 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                             </div>
                         </div>
 
-                        {/* NEW: Hints Section */}
                         <div className="hints-section">
-                            <label className="form-label">Hints (Max 5):</label>
-                            {hints.map((hint, index) => (
-                                <div key={index} className="hint-item">
-                                    <span className="hint-bullet">•</span> {/* Visual bullet point */}
-                                    <textarea
-                                        className="input-field hint-textarea"
-                                        placeholder={`Hint ${index + 1}`}
-                                        value={hint}
-                                        onChange={(e) => handleHintChange(index, e.target.value)}
-                                        rows="1" // Start with 1 row, expand as needed
-                                    ></textarea>
-                                </div>
-                            ))}
+                            <div className="flex items-center mb-2">
+                                <input
+                                    type="checkbox"
+                                    id="hintsEnabled"
+                                    className="accent-CBE220 rounded-sm"
+                                    checked={hintsEnabled}
+                                    onChange={(e) => {
+                                        setHintsEnabled(e.target.checked);
+                                        if (!e.target.checked) {
+                                            setHints(['', '', '', '', '']);
+                                        }
+                                    }}
+                                />
+                                <label htmlFor="hintsEnabled" className="ml-2 form-label">Enable Hints</label>
+                            </div>
+
+                            {hintsEnabled && (
+                                <>
+                                    <label className="form-label">Hints (Max 5):</label>
+                                    {[...Array(5)].map((_, index) => (
+                                        <div key={index} className="hint-item">
+                                            <span className="hint-bullet">•</span>
+                                            <textarea
+                                                className="input-field hint-textarea"
+                                                placeholder={`Hint ${index + 1}`}
+                                                value={hints[index] || ''}
+                                                onChange={(e) => handleHintChange(index, e.target.value)}
+                                                rows="1"
+                                            ></textarea>
+                                        </div>
+                                    ))}
+                                </>
+                            )}
                         </div>
-                        
-                        {/* NEW: Section for Coding Question Test Cases */}
+
                         <div className="test-cases-section">
                             <label className="form-label">Test Cases:</label>
                             {testCases.map((tc, index) => (
@@ -383,7 +498,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                                         />
                                         <label htmlFor={`isHidden-${index}`} className="ml-2">Hidden Test Case</label>
                                     </div>
-                                    {testCases.length > 0 && ( // Ensure there's at least one test case before allowing removal
+                                    {testCases.length > 0 && (
                                         <button
                                             onClick={() => removeTestCase(index)}
                                             className="btn-danger-sm mt-2"
@@ -397,7 +512,6 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                         </div>
                     </div>
                 ) : questionType !== 'descriptive' ? (
-                    // Your existing Options section (Single/Multiple Choice)
                     <div className="options-section">
                         <label className="form-label">Options</label>
                         {options.map((option, index) => (
@@ -416,10 +530,10 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                                     onChange={(e) => handleOptionChange(index, e.target.value)}
                                     placeholder={`Option ${index + 1}`}
                                 />
-                                {options.length > 1 && ( // Only show remove if there's more than one option
+                                {options.length > 1 && (
                                     <button
                                         onClick={() => removeOption(index)}
-                                        className="btn-danger-sm ml-2" // Adjust margin as needed
+                                        className="btn-danger-sm ml-2"
                                     >
                                         Remove
                                     </button>
@@ -431,11 +545,11 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                 ) : (
                     <p className="text-gray-600 text-sm mt-4">Descriptive questions do not require predefined options or test cases.</p>
                 )}
+
                 <div className="question-modal-buttons">
                     <button onClick={handleSubmitQuestion} className="btn-primary">
-                        {questionToEdit ? 'Save Changes' : 'Save & add another'}
+                        {questionToEdit ? 'Save Changes' : 'Save Question'}
                     </button>
-                    <button onClick={handleSubmitQuestion} className="btn-primary">Save</button>
                 </div>
             </div>
         </div>

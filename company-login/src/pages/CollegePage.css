@@ -7,7 +7,7 @@
 }
 
 .college-container {
-    max-width: 48rem;
+    max-width: 62rem;
     width: 100%;
     padding: 2.5rem;
     display: flex;
@@ -87,11 +87,11 @@
   padding-right: 2.5rem; /* space for the arrow */
 }
 
-.college-page .select-arrow {
+.college-page .select-wrapper .select-arrow {
   position: absolute;
   right: 1rem;
-  top: 50%;
-  transform: translateY(-80%);
+  top: calc(50% + 13px);
+  transform: translateY(-50%);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -106,7 +106,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 0.8rem;
     flex-wrap: wrap;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .search-results-section {
-    margin-top: 2.5rem;
+    margin-top: 10px;
 }
 
 .results-title {

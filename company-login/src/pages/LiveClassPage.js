@@ -25,7 +25,7 @@ const LiveClassPage = () => {
     { id: 'lc5', name: "Machine Learning Fundamentals", dateTime: new Date(Date.now() + 10 * 86400000).toISOString(), duration: "2 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: true, platform: 'Google Meet' },
     { id: 'lc6', name: "Cybersecurity Essentials", dateTime: new Date(Date.now() - 5 * 86400000).toISOString(), duration: "1 hr", status: "Completed", shouldRecord: false, platform: 'Google Meet' },
     { id: 'lc7', name: "Active Session 1", dateTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(), duration: "1 hr", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Google Meet' },
-    { id: 'lc8', name: "Active Session 2 (Recorded)", dateTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), duration: "45 min", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: true, platform: 'Zoom' },
+    { id: 'lc8', name: "Active Session 2 (Recording)", dateTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), duration: "45 min", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Zoom' },
     { id: 'lc9', name: "Python Programming Intro", dateTime: new Date(Date.now() - 15 * 86400000).toISOString(), duration: "1.5 hr", status: "Completed", recordedLink: "https://example.com/dummy-recorded-link", shouldRecord: true, platform: 'Google Meet' },
   ]);
 
@@ -49,7 +49,6 @@ const LiveClassPage = () => {
     return totalMillis;
   };
 
-  // Ensure this function is memoized and correctly updates statuses
   const getFilteredClasses = useCallback(() => {
     const now = Date.now();
     let updatedClasses = allClasses.map(cls => {
@@ -69,23 +68,14 @@ const LiveClassPage = () => {
       return { ...cls, status: newStatus };
     });
     return updatedClasses;
-  }, [allClasses]); // `allClasses` is correctly a dependency here
+  }, [allClasses]);
 
-  // Use a state to hold the actively filtered and sorted classes
   const [displayClasses, setDisplayClasses] = useState([]);
 
   useEffect(() => {
-    // This effect will run whenever allClasses changes, or on initial mount
     setDisplayClasses(getFilteredClasses());
-    // In a real application, you might use a setInterval to periodically update statuses
-    // const interval = setInterval(() => {
-    //   setDisplayClasses(getFilteredClasses());
-    // }, 60 * 1000); // Update every minute
+  }, [allClasses, getFilteredClasses]);
 
-    // return () => clearInterval(interval); // Clear interval on unmount
-  }, [allClasses, getFilteredClasses]); // Both are dependencies now
-
-  // Filter based on `displayClasses` which is always up-to-date
   const ongoingClasses = displayClasses
     .filter(cls => cls.status === "Ongoing")
     .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
@@ -98,7 +88,7 @@ const LiveClassPage = () => {
     .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
 
   const isClassCurrentlyRecording = useCallback((clsId) => {
-    const classObject = displayClasses.find(c => c.id === clsId); // Use displayClasses for current status
+    const classObject = displayClasses.find(c => c.id === clsId);
     const isOngoing = ongoingClasses.some(c => c.id === clsId);
     return (manualRecordingId === clsId) || (classObject?.shouldRecord && isOngoing);
   }, [displayClasses, ongoingClasses, manualRecordingId]);
@@ -140,13 +130,31 @@ const LiveClassPage = () => {
     } else if (action === 'Record') {
       const classToRecord = allClasses.find(c => c.id === classId);
       const isOngoing = ongoingClasses.some(c => c.id === classId);
-
-      if (classToRecord?.shouldRecord && isOngoing) {
-        message = `This session ("${className}") is already being automatically recorded.`;
-      } else if (manualRecordingId === classId) {
-        setManualRecordingId(null);
-        message = `Recording for "${className}" has been stopped.`;
-      } else if (manualRecordingId) {
+      const isCurrentlyRecording = isClassCurrentlyRecording(classId);
+      
+      if(isCurrentlyRecording){
+        setAlertConfig({
+          message : `Are you sure you want to stop the recording "${className}"?`, // Corrected message for clarity
+          type : 'confirm', // Corrected syntax: comma instead of semicolon
+          onConfirm : () => { // Corrected syntax: added opening brace for arrow function body
+            setAlertConfig(null);
+            if(manualRecordingId === classId){ // Corrected strict equality
+              setManualRecordingId(null);
+              message = `Manual recording for "${className}" has been stopped.`;
+            } else if(classToRecord?.shouldRecord && isOngoing){
+              message = `Automatic recording for "${className}" has been stopped. (Simulated action)`;
+            }
+            setAlertConfig({
+              message: message,
+              type: 'alert',
+              onConfirm: () => setAlertConfig(null)
+            });
+          },
+          onCancel: () => setAlertConfig(null)
+        });
+        return;
+      }
+      else if (manualRecordingId) {
         const currentlyRecordingClass = allClasses.find(c => c.id === manualRecordingId);
         message = `Already manually recording "${currentlyRecordingClass?.name || 'another session'}". Please stop the current recording first to record "${className}".`;
       } else {
@@ -159,12 +167,13 @@ const LiveClassPage = () => {
     } else {
       message = `${action} for "${className}" (ID: ${classId}) will be initiated. (Simulated action)`;
     }
-
-    setAlertConfig({
-      message: message,
-      type: 'alert',
-      onConfirm: () => setAlertConfig(null)
-    });
+    if (!alertConfig || alertConfig.type !== 'confirm') { 
+        setAlertConfig({
+            message: message,
+            type: 'alert',
+            onConfirm: () => setAlertConfig(null)
+        });
+    }
   };
 
   const handleScheduleMeeting = (e) => {
@@ -264,16 +273,20 @@ const LiveClassPage = () => {
   const isRecordButtonDisabled = (clsId) => {
     const classObject = displayClasses.find(c => c.id === clsId); // Use displayClasses
     const isOngoing = ongoingClasses.some(c => c.id === clsId);
-    return (classObject?.shouldRecord && isOngoing) || (manualRecordingId && manualRecordingId !== clsId);
+    return (classObject?.shouldRecord && isOngoing  && manualRecordingId !== clsId) || (manualRecordingId && manualRecordingId !== clsId);
   };
 
   const getRecordButtonText = (clsId) => {
     const classObject = displayClasses.find(c => c.id === clsId); // Use displayClasses
     const isOngoing = ongoingClasses.some(c => c.id === clsId);
-    if (classObject?.shouldRecord && isOngoing) {
+    const isCurrentlyRecording = isClassCurrentlyRecording(clsId);
+    if(isCurrentlyRecording){
+      return "Stop Recording"; // Changed to title case for consistency
+    }
+    else if (classObject?.shouldRecord && isOngoing) {
       return "Recording (Auto)";
     }
-    return manualRecordingId === clsId ? 'Stop Recording' : 'Record';
+    return 'Record'; // Changed to title case for consistency
   };
 
   return (
@@ -587,6 +600,7 @@ const LiveClassPage = () => {
           message={alertConfig.message}
           type={alertConfig.type}
           onConfirm={alertConfig.onConfirm}
+          onCancel={alertConfig.onCancel}
         />
       )}
     </div>

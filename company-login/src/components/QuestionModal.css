@@ -243,44 +243,41 @@
     }
 }
 
-/* new styles for test cases */
-/* Styling for the overall test cases section container */
+
 .test-cases-section {
-    margin-top: 1.5rem; /* Consistent spacing */
+    margin-top: 1.5rem;
     padding: 1rem;
     border: 1px solid #e0e0e0;
     border-radius: 0.5rem;
     background-color: #f9f9f9;
 }
 
-/* Styling for individual test case items */
+
 .test-case-item {
     display: flex;
-    flex-direction: column; /* Stack input, output, checkbox vertically */
-    align-items: flex-start; /* Align contents to the left */
-    gap: 0.5rem; /* Space between elements within a test case */
-    margin-bottom: 1rem; /* Space between test cases */
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 0.5rem; 
+    margin-bottom: 1rem; 
     padding: 0.75rem;
     border: 1px dashed #cccccc;
     border-radius: 0.375rem;
     background-color: #ffffff;
 }
 
-/* Style for the small labels above input/output */
+
 .test-case-item .form-label.small {
     font-size: 0.85rem;
     color: #555;
-    margin-bottom: 0.25rem; /* Small space below label */
+    margin-bottom: 0.25rem; 
 }
 
-/* Ensure textareas within test cases take full width and are resizable */
 .test-case-item textarea.input-field {
     width: 100%;
-    resize: vertical; /* Allow vertical resizing */
-    min-height: 40px; /* Minimum height for textareas */
+    resize: vertical; 
+    min-height: 60px;
 }
 
-/* Style for the checkbox group (hidden test case) */
 .checkbox-group {
     display: flex;
     align-items: center;
@@ -289,11 +286,9 @@
 
 .checkbox-group input[type="checkbox"] {
     margin-right: 0.5rem;
-    /* Optional: custom accent color if not globally applied */
-    accent-color: #CBE220; /* Matches your radio/checkbox accent color */
+    accent-color: #CBE220; 
 }
 
-/* Styles for small danger buttons (Remove Test Case / Remove Option) */
 .btn-danger-sm {
     background-color: #dc3545; /* Red color */
     color: white;
@@ -309,13 +304,10 @@
     background-color: #c82333;
 }
 
-/* If you added the remove option button, add a margin for it */
 .option-item .btn-danger-sm {
-    margin-left: auto; /* Pushes button to the right */
-    flex-shrink: 0; /* Prevents button from shrinking */
+    margin-left: auto; 
+    flex-shrink: 0; 
 }
-
-/* General button styles for "Add option" / "Add test case" */
 .add-option-button,
 .add-item-button {
     margin-top: 1rem;
@@ -323,16 +315,14 @@
     align-self: flex-start;
 }
 
-/* Styling for hidden test cases (light red) */
 .test-case-item--hidden {
-    background-color: #ffebeb; /* Very light red */
-    border-color: #ffcccc;     /* Slightly darker red for border */
+    background-color: #ffebeb; 
+    border-color: #ffcccc;
 }
 
-/* Styling for shown test cases (light green/blue - adjust as preferred) */
 .test-case-item--shown {
-    background-color: #e0f2f7; /* Very light blue */
-    border-color: #b3e0ed;     /* Slightly darker blue for border */
+    background-color: #e0f2f7; 
+    border-color: #b3e0ed;     
 }
 
 .coding-problem-details-section {
@@ -344,10 +334,9 @@
 }
 
 .coding-problem-details-section > div {
-    margin-bottom: 1rem; /* Space between the title and difficulty fields */
+    margin-bottom: 1rem; 
 }
 
-/* NEW: Style for the Hints section */
 .hints-section {
     margin-top: 1.5rem;
     padding: 1rem;
@@ -357,27 +346,80 @@
 }
 
 .hints-section .form-label {
+    margin-bottom: 0rem;
+    display: block;
+}
+
+.hints-section .flex.items-center {
+    display: flex;
+    align-items: center; 
     margin-bottom: 0.5rem; 
-    display: block; 
 }
 
 .hint-item {
     display: flex;
-    align-items: flex-start; 
-    margin-bottom: 0.5rem; 
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
 }
 
 .hint-bullet {
-    font-size: 1.2rem; 
-    line-height: 1.5rem; 
+    font-size: 1.2rem;
+    line-height: 1.5rem;
     margin-right: 0.5rem;
-    color: #555; 
-    flex-shrink: 0; 
+    color: #555;
+    flex-shrink: 0;
 }
 
 .hint-textarea {
-    flex-grow: 1; 
-    resize: vertical; 
-    min-height: 2.5rem; 
-    padding: 0.5rem 0.75rem; 
+    flex-grow: 1;
+    resize: vertical;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Image Upload Section */
+.image-upload-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #e0e0e0;
+}
+
+/* Hide the default file input */
+.hidden-file-input {
+    display: none;
+}
+
+/* Style for the "Upload Image" button */
+.upload-image-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+}
+
+/* Image preview container */
+.image-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    /* padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background-color: #fcfcfc; */
+}
+
+.image-preview img {
+    max-width: 150px;
+    height: auto;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0
+}
+
+.image-preview .btn-danger-sm {
+    align-self: flex-end;
+    margin-top: 0.25rem;
 }

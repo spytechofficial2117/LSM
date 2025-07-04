@@ -97,6 +97,7 @@ const RankingPage = () => {
               <thead>
                 <tr>
                   <th>Rank</th>
+                  <th>ID</th>
                   <th>Student Name</th>
                   <th>University</th>
                   <th>Total Score</th>
@@ -107,6 +108,7 @@ const RankingPage = () => {
                 {filteredStudents.map((student) => (
                   <tr key={student.id}>
                     <td>{student.rank}</td>
+                    <td>{student.id}</td>
                     <td>{student.name}</td>
                     <td>{student.university}</td>
                     <td>{student.score}</td>
