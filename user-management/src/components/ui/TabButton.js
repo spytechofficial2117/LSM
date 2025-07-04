@@ -9,5 +9,4 @@ const TabButton = ({ text, isActive, onClick }) => (
         {text}
     </button>
 );
-
 export default TabButton;

@@ -1,20 +1,17 @@
+// src/pages/BatchUpdates.js
 import React, { useState, useRef, useEffect} from 'react';
 import './BatchUpdates.css';
 import PageTitle from '../components/ui/PageTitle';
 import CustomSelect from '../components/ui/CustomSelect'; // Using CustomSelect instead of FormSelect
-import { mockUsers, mockUpdateHistory } from '../data/mockData';
 import { SearchIcon } from '../components/Icons';
 
 // Import parsing libraries
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-
-// Helper function to highlight search matches
 const highlightMatch = (text, query) => {
     if (!query) return text;
     const index = text.toLowerCase().indexOf(query.toLowerCase());
     if (index === -1) return text;
-
     return (
         <>
             {text.slice(0, index)}
@@ -40,104 +37,122 @@ const BulkEditInterface = ({
     selectedDepartmentFilter,
     setSelectedDepartmentFilter,
     selectedYearFilter,
+  
     setSelectedYearFilter,
     selectedSectionFilter,
     setSelectedSectionFilter,
     selectedRoleFilter,
     setSelectedRoleFilter,
     filteredUsers,
+    users,
 }) => {
     const searchContainerRef = useRef(null);
-
     const getSelectedUserDetails = (userId) => {
-        return mockUsers.find(user => user.id === userId);
+        return users.find(user => user.id === userId);
     };
-
     return (
         <div>
             <div className="filter-box">
                 <h3 className="filter-title">Filter Users</h3>
                 <div className="filter-grid">
                     <CustomSelect
+                       
                         label="Department"
                         options={dynamicDropdownOptions.Department}
                         value={selectedDepartmentFilter} // Assuming a state for this in parent
                         onChange={(value) => setSelectedDepartmentFilter(value)} // Assuming a handler
+             
                     />
                     <CustomSelect
                         label="Year"
                         options={dynamicDropdownOptions.Year}
-                        value={selectedYearFilter} // Assuming a state for this in parent
+                        value={selectedYearFilter} 
                         onChange={(value) => setSelectedYearFilter(value)} // Assuming a handler
                     />
                     <CustomSelect
+                       
                         label="Section"
                         // Assuming 'Section' is also provided by your CSV/Excel.
-                        // If not, you can provide static options or omit.
                         options={dynamicDropdownOptions.Section}
                         value={selectedSectionFilter} // Assuming a state for this in parent
                         onChange={(value) => setSelectedSectionFilter(value)} // Assuming a handler
                     />
+                  
                     <CustomSelect
                         label="Role"
                         options={dynamicDropdownOptions.Role}
                         value={selectedRoleFilter} // Assuming a state for this in parent
+                  
                         onChange={(value) => setSelectedRoleFilter(value)} // Assuming a handler
                     />
                 </div>
 
                 <div className="search-container" ref={searchContainerRef}>
                     <SearchIcon className="search-icon" />
+            
                     <input
                         type="text"
                         placeholder="Search users"
                         className="search-input"
+                   
                         value={searchQuery}
                         onChange={handleSearch}
                         onFocus={() => setIsSearchFocused(true)}
                         onBlur={() => {
+                   
                             setTimeout(() => {
                                 if (searchContainerRef.current && !searchContainerRef.current.contains(document.activeElement)) {
                                     setIsSearchFocused(false);
                                 }
-                            }, 150); // Increased timeout slightly for robustness
+                            }, 150);
                         }}
                     />
                     {searchQuery && isSearchFocused && (
                         <ul className="search-suggestions">
+  
                             {searchResults.length > 0 ? (
                                 searchResults.slice(0, 5).map(user => (
+                                   
                                     <li
                                         key={user.id}
                                         className="suggestion-item"
+                   
                                         onMouseDown={(e) => {
                                             e.preventDefault();
+                                 
                                             handleSuggestionClick(user);
                                         }}
                                     >
+             
                                         {highlightMatch(user.name, searchQuery)} – {highlightMatch(user.email, searchQuery)}
                                     </li>
                                 ))
+ 
                             ) : (
                                 <li className="suggestion-item no-match">No user found</li>
                             )}
+       
                         </ul>
                     )}
                 </div>
 
                 {selectedUsers.length > 0 && (
                     <div className="selected-users-chips">
+      
                         <h4>Selected Users:</h4>
                         {selectedUsers.map(userId => {
                             const user = getSelectedUserDetails(userId);
                             return user ? (
                                 <span key={user.id} className="user-chip">
                                     {user.name}
+                           
                                     <button
                                         className="remove-chip-button"
                                         onClick={() => setSelectedUsers(prev => prev.filter(id => id !== userId))}
+   
                                     >
                                         &times;
+                           
                                     </button>
                                 </span>
                             ) : null;
@@ -149,42 +164,55 @@ const BulkEditInterface = ({
             <div className="table-container">
                 <table className="data-table">
                     <thead>
+  
                         <tr>
                             <th><input type="checkbox" /></th>
                             {["Name", "Email", "Role", "Department", "Year", "Status", "Actions"].map(header => (
+            
                                 <th key={header}>{header}</th>
                             ))}
                         </tr>
                     </thead>
+       
                     <tbody>
-                        {mockUsers.map(user => (
+                        {filteredUsers.map(user => (
                             <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected-row' : ''}>
+                           
                                 <td>
                                     <input
                                         type="checkbox"
+                   
                                         checked={selectedUsers.includes(user.id)}
                                         onChange={() => {
+                                     
                                             setSelectedUsers(prev =>
                                                 prev.includes(user.id)
+                                            
                                                     ? prev.filter(id => id !== user.id)
                                                     : [...prev, user.id]
+                                 
                                             );
                                         }}
                                     />
                                 </td>
+                                
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.role}</td>
                                 <td>{user.department}</td>
+    
                                 <td>{user.year}</td>
                                 <td>
-                                    <span className={`status ${user.status === 'Active' ? 'status-valid' : 'status-inactive'}`}>
+                                    <span className={`status ${user.status === 
+                                        'Active' ? 'status-valid' : 'status-inactive'}`}>
                                         {user.status}
                                     </span>
+                    
                                 </td>
                                 <td className="action-cell">Edit</td>
                             </tr>
                         ))}
+   
                     </tbody>
                 </table>
             </div>
@@ -192,16 +220,13 @@ const BulkEditInterface = ({
             <div className="action-buttons">
                 <button className="btn-secondary">Cancel</button>
                 <button className="btn-confirm">Apply changes</button>
+       
             </div>
         </div>
     );
 };
-
-// --- Component 2: Upload Sheet Interface ---
 const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownOptions }) => {
      const [isDragging, setIsDragging] = useState(false);
-
-    // Drag and drop event handlers
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -212,28 +237,19 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
         e.preventDefault();
         e.stopPropagation();
     };
-
     const handleDragLeave = (e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
     };
-
     const handleDrop = (e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
-
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            // Call the parent's handleFileChange with a synthetic event object
-            // to mimic the behavior of a regular file input change.
             handleFileChange({ target: { files: e.dataTransfer.files } });
         }
     };
-
-
-
-    // This component now directly handles the parsing and updates the parent's state
     const handleInternalUpload = () => {
         if (!selectedFile) {
             alert("Please select a file to upload.");
@@ -241,7 +257,6 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
         }
 
         const reader = new FileReader();
-
         reader.onload = (e) => {
             const data = e.target.result;
             let parsedData = [];
@@ -252,13 +267,16 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
                     header: true, // Treat first row as headers
                     skipEmptyLines: true,
                     complete: (results) => {
+  
                         parsedData = results.data;
                         headers = results.meta.fields; // Get headers from PapaParse
                         extractAndSetOptions(parsedData, headers);
+                    
                     },
                     error: (error) => {
                         console.error("Error parsing CSV:", error);
                         alert("Error parsing CSV file. Please check the format.");
+                   
                     }
                 });
             } else if (selectedFile.name.endsWith('.xlsx')) {
@@ -267,13 +285,8 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
                     const sheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[sheetName];
                     
-                    // Use sheet_to_json without header:1 to get array of objects directly
                     parsedData = XLSX.utils.sheet_to_json(worksheet);
-                    
-                    // Extract headers if needed, otherwise parsing to objects makes it less critical
-                    // headers = Object.keys(parsedData[0] || {}); // Get headers from first row of parsed data
-
-                    extractAndSetOptions(parsedData, Object.keys(parsedData[0] || {})); // Pass keys from first object as headers
+                    extractAndSetOptions(parsedData, Object.keys(parsedData[0] || {}));
                 } catch (error) {
                     console.error("Error parsing XLSX:", error);
                     alert("Error parsing Excel file. Please check the format.");
@@ -284,29 +297,26 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
             }
         };
 
-        reader.readAsBinaryString(selectedFile); // For XLSX, binary string is generally recommended
+        reader.readAsBinaryString(selectedFile);
     };
-
     const extractAndSetOptions = (data, headers) => {
         const departments = new Set();
         const roles = new Set();
         const years = new Set();
-        const sections = new Set(); // Assuming 'Section' might also come from the file
+        const sections = new Set();
 
         data.forEach(row => {
-            // Ensure the column names match your CSV/Excel headers exactly (case-sensitive)
             if (row.Department) departments.add(row.Department);
             if (row.Role) roles.add(row.Role);
             if (row.Year) years.add(row.Year);
-            if (row.Section) sections.add(row.Section); // Add this if 'Section' is in your file
+            if (row.Section) sections.add(row.Section); 
         });
-
-        // Convert Sets to arrays and add default 'Select...' options
         const dynamicOptions = {
             Department: ['Select Department', ...Array.from(departments).sort()],
             Role: ['Select Role', ...Array.from(roles).sort()],
             Year: ['Select Year', 'N/A', ...Array.from(years).sort((a, b) => parseInt(b) - parseInt(a))], // Sort years descending numerically
             Section: ['Select Section', ...Array.from(sections).sort()], // Sort sections
+      
         };
         setDynamicDropdownOptions(dynamicOptions); // Update parent state
         alert("File parsed and dropdown options updated!");
@@ -318,30 +328,36 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
                 <h3 className="filter-title">Upload CSV or Excel File</h3>
                 <label className= {`upload-dropzone ${isDragging? 'dragging' : ''}`}
                   onDragEnter={handleDragEnter}
+                
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                 >
                     <input
+                    
                         type="file"
                         accept=".csv,.xlsx"
                         className="hidden-input"
                         onChange={handleFileChange}
                     />
+    
                     <div className="dropzone-content">
                         <p className="dropzone-title">Drag and drop file here</p>
                         <p className="dropzone-sub">or click to select CSV/Excel file</p>
                     </div>
+    
                 </label>
 
                 {selectedFile && (
                     <div className="upload-actions">
                         <p className="file-name">Selected: {selectedFile.name}</p>
+                       
                         <button className="btn-primary upload-button" onClick={handleInternalUpload}>
                             Upload File
                         </button>
                     </div>
                 )}
+       
             </div>
 
             <div>
@@ -349,24 +365,17 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
                 <div className="table-container">
                     <table className="data-table">
                         <thead>
+   
                             <tr>
                                 {["Date", "Update Type", "Affected Users", "Status", "Details"].map(header => (
+                                   
                                     <th key={header}>{header}</th>
                                 ))}
                             </tr>
                         </thead>
+              
                         <tbody>
-                            {mockUpdateHistory.map(item => (
-                                <tr key={item.id}>
-                                    <td>{item.date}</td>
-                                    <td>{item.type}</td>
-                                    <td>{item.affected}</td>
-                                    <td>
-                                        <span className="status status-valid">{item.status}</span>
-                                    </td>
-                                    <td><button className="btn-secondary small">View</button></td>
-                                </tr>
-                            ))}
+                            {/* Mock data removed */}
                         </tbody>
                     </table>
                 </div>
@@ -376,7 +385,7 @@ const UploadUpdateSheet = ({ selectedFile, handleFileChange, setDynamicDropdownO
 };
 
 // --- Main Component: Batch Updates ---
-const BatchUpdates = () => {
+const BatchUpdates = ({ users, updateUsers }) => {
     const [activeTab, setActiveTab] = useState('upload');
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -391,33 +400,29 @@ const BatchUpdates = () => {
         Year: ["Select Year", "N/A"],
         Section: ["Select Section"]
     });
-
-    // NEW STATE for the selected values in the filter dropdowns (in Bulk Edit tab)
     const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState('Select Department');
     const [selectedYearFilter, setSelectedYearFilter] = useState('Select Year');
     const [selectedSectionFilter, setSelectedSectionFilter] = useState('Select Section');
     const [selectedRoleFilter, setSelectedRoleFilter] = useState('Select Role');
-
-    //new state for filters
-    const[filteredUsers, setFilteredUsers]= useState(mockUsers);
-
-    //useEffect for filter users 
+    const[filteredUsers, setFilteredUsers]= useState(users);
     useEffect( ()=>{
-         let currentFilteredUsers = mockUsers;
+         let currentFilteredUsers = users;
 
         if (selectedDepartmentFilter !== 'Select Department') {
             currentFilteredUsers = currentFilteredUsers.filter(user =>
                 user.department === selectedDepartmentFilter
             );
         }
-        if (selectedYearFilter !== 'Select Year') {
+        if (selectedYearFilter !== 'Select Year') 
+        {
             currentFilteredUsers = currentFilteredUsers.filter(user =>
                 String(user.year) === selectedYearFilter 
             );
         }
         if (selectedSectionFilter !== 'Select Section') {
             currentFilteredUsers = currentFilteredUsers.filter(user =>
-                user.section === selectedSectionFilter
+                user.section === 
+                selectedSectionFilter
             );
         }
         if (selectedRoleFilter !== 'Select Role') {
@@ -427,7 +432,7 @@ const BatchUpdates = () => {
         }
 
         setFilteredUsers(currentFilteredUsers);
-    }, [selectedDepartmentFilter, selectedYearFilter, selectedSectionFilter, selectedRoleFilter]); 
+    }, [selectedDepartmentFilter, selectedYearFilter, selectedSectionFilter, selectedRoleFilter, users]); 
 
     const handleSearch = (e) => {
         const query = e.target.value;
@@ -439,6 +444,7 @@ const BatchUpdates = () => {
                     user.name.toLowerCase().includes(query.toLowerCase()) ||
                     user.email.toLowerCase().includes(query.toLowerCase())
                 )
+      
             );
             setSearchResults(filtered);
         } else {
@@ -454,19 +460,15 @@ const BatchUpdates = () => {
         setSearchResults([]);
         setIsSearchFocused(false);
     };
-
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setSelectedFile(file);
-        // Reset dynamic options when a new file is selected,
-        // so they don't persist from a previous upload
         setDynamicDropdownOptions({
             Department: ["Select Department"],
             Role: ["Select Role"],
             Year: ["Select Year", "N/A"],
             Section: ["Select Section"]
         });
-        // Also reset filter selections if they were tied to previous file's data
         setSelectedDepartmentFilter('Select Department');
         setSelectedYearFilter('Select Year');
         setSelectedSectionFilter('Select Section');
@@ -478,32 +480,40 @@ const BatchUpdates = () => {
             <PageTitle title="Batch Updates" subtitle="Perform bulk updates to user roles, departments, or academic years." />
             <div className="tab-header">
                 <button className={`tab-button ${activeTab === 'upload' ? 'active' : ''}`} onClick={() => setActiveTab('upload')}>Upload Update Sheet</button>
+                
                 <button className={`tab-button ${activeTab === 'bulkEdit' ? 'active' : ''}`} onClick={() => setActiveTab('bulkEdit')}>Bulk Edit Interface</button>
             </div>
             {activeTab === 'bulkEdit' ? (
                 <BulkEditInterface
                     selectedUsers={selectedUsers}
                     setSelectedUsers={setSelectedUsers}
+   
                     searchQuery={searchQuery}
                     handleSearch={handleSearch}
                     isSearchFocused={isSearchFocused}
                     setIsSearchFocused={setIsSearchFocused}
                     searchResults={searchResults}
+   
                     handleSuggestionClick={handleSuggestionClick}
                     dynamicDropdownOptions={dynamicDropdownOptions} // Pass dynamic options here
                     selectedDepartmentFilter={selectedDepartmentFilter}
                     setSelectedDepartmentFilter={setSelectedDepartmentFilter}
+                  
                     selectedYearFilter={selectedYearFilter}
                     setSelectedYearFilter={setSelectedYearFilter}
                     selectedSectionFilter={selectedSectionFilter}
                     setSelectedSectionFilter={setSelectedSectionFilter}
                     selectedRoleFilter={selectedRoleFilter}
-                    setSelectedRoleFilter={selectedRoleFilter}
+                  
+                    setSelectedRoleFilter={setSelectedRoleFilter}
+                    filteredUsers={filteredUsers}
+                    users={users}
                 />
             ) : (
                 <UploadUpdateSheet
                     selectedFile={selectedFile}
                     handleFileChange={handleFileChange}
+            
                     setDynamicDropdownOptions={setDynamicDropdownOptions} // Pass the setter function
                 />
             )}

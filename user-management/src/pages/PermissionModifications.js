@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './PermissionModifications.css';
 import PageTitle from '../components/ui/PageTitle';
-// import FormSelect from '../components/ui/FormSelect';
 import CustomSelect from '../components/ui/CustomSelect';
-import { mockUsers } from '../data/mockData';
 
-const PermissionModifications = () => {
+const PermissionModifications = ({ users, updateUsers }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedPermissions, setSelectedPermissions] = useState([]);
-    // State to store assigned permissions for each user
-    // e.g., { u1: ['View-only'], u2: ['Edit Access'] }
     const [userPermissions, setUserPermissions] = useState({});
     const [permissionRole, setPermissionRole]= useState('Select user role');
     const [permissionDepartment, setPermissionDepartment]= useState('Select Department');
     const [permissionYear, setPermissionYear]= useState('Select year');
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
-    //for filtering data
-     const [filteredUsers, setFilteredUsers] = useState([]);
-
-    // Add handlers for these state updates
     const handlePermissionRoleChange = (value) => {
         setPermissionRole(value);
     };
@@ -26,14 +19,13 @@ const PermissionModifications = () => {
         setPermissionDepartment(value);
     };
     const handlePermissionYearChange = (value) => {
-    const year = value;
-    setPermissionYear(year);
+        setPermissionYear(value);
     };
 
     const generateYears = () => {
         const currentYear = new Date().getFullYear();
         const years = ["Select year", "N/A"];
-        for (let i = currentYear; i >= currentYear - 50; i--) { // Generates years from current year down to 100 years ago
+        for (let i = currentYear; i >= currentYear - 50; i--) {
             years.push(String(i));
         }
         return years;
@@ -51,7 +43,6 @@ const PermissionModifications = () => {
         );
     };
 
-    // Effect to update selected permissions when selected users change
     useEffect(() => {
         if (selectedUsers.length === 0) {
             setSelectedPermissions([]);
@@ -64,7 +55,6 @@ const PermissionModifications = () => {
             return;
         }
 
-        // For multiple users, find the intersection of their permissions
         const firstUserPermissions = userPermissions[selectedUsers[0]] || [];
         const commonPermissions = firstUserPermissions.filter(permission =>
             selectedUsers.slice(1).every(userId =>
@@ -82,7 +72,6 @@ const PermissionModifications = () => {
             return;
         }
 
-        // Apply the currently selected permissions to all selected users
         setUserPermissions(prevPermissions => {
             const newPermissions = { ...prevPermissions };
             selectedUsers.forEach(userId => {
@@ -93,41 +82,32 @@ const PermissionModifications = () => {
 
         alert(`Applying the following permissions: ${selectedPermissions.join(', ') || 'None'} to ${selectedUsers.length} user(s).`);
 
-        // ADDED: Reset the permission selection buttons to their default state
         setSelectedPermissions([]);
-        // ADDED: Unselect all users after applying changes
         setSelectedUsers([]);
     };
 
     const permissions = ["View-only", "Edit Access", "Admin control"];
      useEffect(() => {
-        let currentFilteredUsers = mockUsers; // Start with all mock users
+        let currentFilteredUsers = users;
 
-        // Apply Role filter
         if (permissionRole !== 'Select user role') {
             currentFilteredUsers = currentFilteredUsers.filter(user => user.role === permissionRole);
         }
 
-        // Apply Department filter
-        // Note: Make sure "Computer Science" matches casing in mockData
         if (permissionDepartment !== 'Select Department') {
             currentFilteredUsers = currentFilteredUsers.filter(user => user.department === permissionDepartment);
         }
 
-        // Apply Year filter
         if (permissionYear !== 'Select year') {
             currentFilteredUsers = currentFilteredUsers.filter(user => {
-                // Handle "N/A" for year, and ensure comparison is consistent
-                return user.year === permissionYear || (permissionYear === "N/A" && user.year === "N/A");
+                return String(user.year) === permissionYear;
             });
         }
 
         setFilteredUsers(currentFilteredUsers);
-
-        // This is important to prevent selected users from disappearing but remaining selected
         setSelectedUsers([]);
 
-    }, [permissionRole, permissionDepartment, permissionYear]);
+    }, [permissionRole, permissionDepartment, permissionYear, users]);
 
     return (
         <div className="permission-mod-page">
@@ -139,28 +119,24 @@ const PermissionModifications = () => {
             <div className="filter-box">
                 <h3 className="filter-title">Filter Users</h3>
                 <div className="filter-grid">
-                    {/* <FormSelect label="Role" options={["Select Role", "Student", "Faculty", "Staff"]} />
-                    <FormSelect label="Department" options={["Select Department", "Computer Science", "Mathematics", "Engineering"]} />
-                    <FormSelect label="Year" options={["Select Year", "2023", "2024", "2025"]} /> */}
-            <CustomSelect
-                label="Role"
-                options={["Select user role", "Student","Faculty","Staff"]}
-                value={permissionRole}
-                onChange={handlePermissionRoleChange}
-            />
-            <CustomSelect
-                label="Department"
-                options={["Select Department","Computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
-                value={permissionDepartment}
-                onChange={handlePermissionDepartmentChange}
-                />
-            <CustomSelect
-                label="Year"
-                options={generateYears()}
-                value={permissionYear}
-                onChange={handlePermissionYearChange}
-                // className="year-select" // No longer needed for CustomYearSelect itself for width control
-            />
+                    <CustomSelect
+                        label="Role"
+                        options={["Select user role", "Student","Faculty","Staff"]}
+                        value={permissionRole}
+                        onChange={handlePermissionRoleChange}
+                    />
+                    <CustomSelect
+                        label="Department"
+                        options={["Select Department","Computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
+                        value={permissionDepartment}
+                        onChange={handlePermissionDepartmentChange}
+                    />
+                    <CustomSelect
+                        label="Year"
+                        options={generateYears()}
+                        value={permissionYear}
+                        onChange={handlePermissionYearChange}
+                    />
                 </div>
             </div>
 
@@ -179,7 +155,7 @@ const PermissionModifications = () => {
                                     }
                                 }}
                                 checked={selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length}
-                                disabled={filteredUsers.length ===0}
+                                disabled={filteredUsers.length === 0}
                                 /></th>
                                 {['Name', 'Role', 'Department', 'Year'].map(header => (
                                     <th key={header}>{header}</th>
@@ -187,7 +163,7 @@ const PermissionModifications = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredUsers.length > 0 ?(
+                            {filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => (
                                 <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected-row' : ''}>
                                     <td>
@@ -203,7 +179,7 @@ const PermissionModifications = () => {
                                     <td>{user.year}</td>
                                 </tr>
                             ))
-                        ): (
+                        ) : (
                             <tr>
                                 <td colSpan='5' style={{textAlign: 'center', padding: '20px'}} >No users found matching the selected filters.</td>
                             </tr>
@@ -234,5 +210,4 @@ const PermissionModifications = () => {
         </div>
     );
 };
-
 export default PermissionModifications;

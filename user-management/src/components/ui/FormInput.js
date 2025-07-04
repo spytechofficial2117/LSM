@@ -1,6 +1,5 @@
 import React from 'react';
 import './FormInput.css';
-
 const FormInput = ({ label, placeholder,value,onChange}) => (
     <div className="form-input">
         <label className="form-label">{label}</label>
@@ -13,5 +12,4 @@ const FormInput = ({ label, placeholder,value,onChange}) => (
 
     </div>
 );
-
 export default FormInput;
