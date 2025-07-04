@@ -6,7 +6,7 @@ import SearchBar from './searchBar';
 import maleprofile from './assets/images/male-profile.jpg';
 import './StudentCard.css';
 import './FilterPanel.css';
-import StudentDashboard from './StudentDashboardcom';
+import StudentDashboard from './StudentDashboard';
 import './StudentDashboard.css';
 
 const students=[

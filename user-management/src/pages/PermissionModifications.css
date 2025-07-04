@@ -117,3 +117,9 @@
 .btn-confirm:hover {
     background-color: #b9d01f;
 }
+
+.content-inner{
+    position: relative;
+    left: 2.8rem;
+    top: -2.5rem;
+}

@@ -150,7 +150,7 @@ const PermissionModifications = () => {
             />
             <CustomSelect
                 label="Department"
-                options={["Select Department","computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
+                options={["Select Department","Computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
                 value={permissionDepartment}
                 onChange={handlePermissionDepartmentChange}
                 />
