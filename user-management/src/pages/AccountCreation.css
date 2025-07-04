@@ -1,3 +1,32 @@
+/* AccountCreation.css */
+
+/* Add these styles to your existing AccountCreation.css file */
+
+/* Style for the individual remove button in table rows */
+.btn-remove-row {
+    background-color: #cc0000; /* Red background for removal */
+    color: #FEFEFA; /* White text color */
+    border: none; /* No border */
+    padding: 0.3rem 0.7rem; /* Padding for text button */
+    cursor: pointer;
+    border-radius: 0.5rem; /* Slightly rounded corners for the button */
+    transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+    font-size: 0.8rem; /* Adjust font size */
+    font-weight: 600; /* Make text bold */
+    display: inline-flex; /* Allows padding and alignment */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover effect for the remove button */
+.btn-remove-row:hover {
+    background-color: #a30000; /* Darker red on hover */
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+/* The .remove-icon styles are no longer needed as we are using text */
+
+
 /* Removed the problematic html, body rules */
 /* html, body {
   height: 100%;
@@ -11,7 +40,7 @@ body * {
 
 
 .account-creation {
-    padding: 1rem; 
+    padding: 1rem;
 }
 
 /* These rules are now less critical as html/body overflow:hidden is removed,
@@ -23,56 +52,56 @@ body * {
 }
 
 .tab-header {
-    display: flex; 
-    gap: 0.5rem; 
-    margin-bottom: 2rem; 
-    border-bottom: 1px solid #7d8332; 
-    padding-bottom: 0.5rem; 
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #7d8332;
+    padding-bottom: 0.5rem;
 }
 
 .form-grid {
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 1rem; 
-    margin-bottom: 2rem; 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .button-row {
-    grid-column: span 3; 
-    display: flex; 
-    justify-content: flex-end; 
+    grid-column: span 3;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .upload-box {
     border: 2px dashed #EBF374; /* Changed */
-    border-radius: 1rem; 
-    padding: 2rem; 
-    text-align: center; 
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
     background: #FEFEFA; /* Changed */
-    margin-bottom: 2rem; 
+    margin-bottom: 2rem;
 }
 
 .upload-description {
     color: #151603; /* Changed */
-    margin-top: 0.5rem; 
-    margin-left: auto; 
-    margin-right: auto; 
+    margin-top: 0.5rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .upload-dropzone {
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    flex-direction: column; 
-    height: 12rem; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 12rem;
     border: 2px dashed #EBF374; /* Changed */
 
     text-align: center;
-    border-radius: 1rem; 
+    border-radius: 1rem;
     background-color: #FEFEFA; /* Changed */
-    cursor: pointer; 
-    transition: background-color 0.3s ease; 
-    margin-top: 1.5rem; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1.5rem;
 }
 
 .upload-dropzone:hover {
@@ -82,56 +111,56 @@ body * {
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
 }
 .hidden-input {
-    display: none; 
+    display: none;
 }
 
 .dropzone-content {
-    text-align: center; 
+    text-align: center;
 }
 
 .dropzone-title {
-    font-size: 1.125rem; 
-    font-weight: 600; 
+    font-size: 1.125rem;
+    font-weight: 600;
     color: #151603; /* Changed */
 }
 
 .dropzone-sub {
     color: #151603; /* Changed */
-    margin-top: 0.25rem; 
+    margin-top: 0.25rem;
 }
 
 .upload-actions {
-    margin-top: 1rem; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    gap: 1rem; 
-    width: 100%; 
-    margin-left: auto; 
-    margin-right: auto; 
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .file-name {
-    font-size: 0.875rem; 
+    font-size: 0.875rem;
     color: #151603; /* Changed */
-    font-weight: 500; 
-    flex-grow: 1; 
+    font-weight: 500;
+    flex-grow: 1;
 }
 
 .upload-button {
-    padding: 0.5rem 1.25rem; 
-    font-size: 0.875rem; 
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
 }
 
 .preview-section {
-    margin-top: 2rem; 
+    margin-top: 2rem;
 }
 
 .preview-title {
-    font-size: 1.5rem; 
-    font-weight: bold; 
+    font-size: 1.5rem;
+    font-weight: bold;
     color: #151603; /* Changed */
-    margin-bottom: 1rem; 
+    margin-bottom: 1rem;
 }
 
 .preview-scroll-wrapper{
@@ -148,39 +177,39 @@ body * {
 /* .table-wrapper {
     min-height: 150px;
     max-height: 100%;
-    overflow-x: auto; 
+    overflow-x: auto;
     overflow-y: auto;
-    border: 1px solid #7d8332; 
-    border-radius: 0.5rem; 
+    border: 1px solid #7d8332;
+    border-radius: 0.5rem;
 } */
 
 .data-table {
     width: 100%;
-    min-width: 100px; 
-    border-collapse: collapse; 
+    min-width: 100px;
+    border-collapse: collapse;
     /* background-color: #7d8332;  */
     background-color: white;
-}                    
+}
 .data-table thead {
     position:sticky;
     top:0;
     background-color: #f5f5f5;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 10;
-}    
+}
 .data-table th,
 .data-table td {
-    padding: 0.75rem; 
-    text-align: left; 
-    border-bottom: 1px solid #7d8332; 
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #7d8332;
 }
 
 .status {
-    padding: 0.25rem 0.75rem; 
-    border-radius: 999px; 
-    font-size: 0.75rem; 
-    font-weight: 600; 
-    display: inline-block; 
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
 }
 
 .status-valid {
@@ -194,20 +223,20 @@ body * {
 }
 
 .action-buttons {
-    display: flex; 
-    justify-content: flex-end; 
-    gap: 1rem; 
-    margin-top: 2rem; 
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
 .btn-primary {
     background-color: #CBE220; /* Changed */
     color: #151603; /* Changed */
-    padding: 0.5rem 1.25rem; 
-    border: none; 
-    border-radius: 0.5rem; 
-    font-weight: 600; 
-    cursor: pointer; 
+    padding: 0.5rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -217,21 +246,21 @@ body * {
 .btn-secondary {
     background-color: #56E9B3; /* Changed */
     color: #151603; /* Changed */
-    padding: 0.5rem 1.25rem; 
-    border: none; 
-    border-radius: 0.5rem; 
-    font-weight: 600; 
-    cursor: pointer; 
+    padding: 0.5rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .btn-confirm {
     background-color: #CBE220; /* Changed */
     color: #151603; /* Changed */
-    padding: 0.5rem 1.25rem; 
-    border: none; 
-    border-radius: 0.5rem; 
-    font-weight: 600; 
-    cursor: pointer; 
+    padding: 0.5rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .btn-confirm:hover {

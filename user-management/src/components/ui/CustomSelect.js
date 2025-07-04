@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import './CustomSelect.css'; 
-
+import './CustomSelect.css';
 const CustomSelect = ({ label, options, value, onChange, className, error }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null); // Used to detect clicks outside the dropdown
@@ -15,7 +13,6 @@ const CustomSelect = ({ label, options, value, onChange, className, error }) => 
         onChange(optionValue);
         setIsOpen(false); // Close the dropdown after selection
     };
-
     // Effect to close the dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -29,10 +26,12 @@ const CustomSelect = ({ label, options, value, onChange, className, error }) => 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []); // Empty dependency array ensures this runs once on mount and cleans up on unmount
+    }, []);
+    // Empty dependency array ensures this runs once on mount and cleans up on unmount
 
     // Determine what to display in the trigger
-    const displayValue = options.find(option => option === value) || (value || "Select year");
+    const displayValue = options.find(option => option === value) ||
+    (value || "Select year");
 
     return (
         <div className={`form-group ${className || ''}`} ref={dropdownRef}>

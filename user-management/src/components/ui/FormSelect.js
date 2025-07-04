@@ -1,6 +1,5 @@
 import React from 'react';
 import './FormSelect.css';
-
 const FormSelect = ({ label, options }) => (
     <div className="form-select">
         <label className="form-label">{label}</label>
@@ -9,5 +8,4 @@ const FormSelect = ({ label, options }) => (
         </select>
     </div>
 );
-
 export default FormSelect;
