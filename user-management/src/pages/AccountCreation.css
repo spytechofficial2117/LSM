@@ -1,8 +1,10 @@
-html, body {
+/* Removed the problematic html, body rules */
+/* html, body {
   height: 100%;
   overflow: hidden;
-}
+} */
 
+/* Ensure body * doesn't interfere with overall layout */
 body * {
   max-width: 100%;
 }
@@ -12,6 +14,8 @@ body * {
     padding: 1rem; 
 }
 
+/* These rules are now less critical as html/body overflow:hidden is removed,
+   but they are good for ensuring content visibility within their own context. */
 .account-creation,
 .main-content {
   overflow: visible !important;

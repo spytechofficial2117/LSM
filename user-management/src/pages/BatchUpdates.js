@@ -498,7 +498,7 @@ const BatchUpdates = () => {
                     selectedSectionFilter={selectedSectionFilter}
                     setSelectedSectionFilter={setSelectedSectionFilter}
                     selectedRoleFilter={selectedRoleFilter}
-                    setSelectedRoleFilter={setSelectedRoleFilter}
+                    setSelectedRoleFilter={selectedRoleFilter}
                 />
             ) : (
                 <UploadUpdateSheet

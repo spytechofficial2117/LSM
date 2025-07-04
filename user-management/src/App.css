@@ -1,42 +1,87 @@
 /* Root setup */
-html, body, #root {
+html {
     height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    /* Firefox scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #CBE220 #FEFEFA;
 }
 
-/* Variables */
-:root {
-    --sidebar-width-open: 18rem;
-    --sidebar-width-closed-visual: 0;
-    --transition-speed: 0.3s ease-in-out;
-    --fade-speed: 0.2s ease-in-out;
-
-    --color-primary-dark: #151603;
-    --color-background-light: #FEFEFA;
-    --color-sidebar-gradient-start: #fbffc6;
-    --color-sidebar-link-hover: #EBF37466;
-    --color-sidebar-link-active: #EBF37480;
-    --color-decorative-circle: rgba(235, 243, 116, 0.4);
-
-    --main-content-padding: 2.5rem;
-    --hamburger-icon-size: 1.5rem;
-    --hamburger-button-padding: 0.75rem;
-    --reserved-left-space-for-hamburger: calc(var(--hamburger-icon-size) + (var(--hamburger-button-padding) * 2) + 1rem);
+/* Webkit Scrollbar (Chrome, Edge, Safari) */
+html::-webkit-scrollbar {
+    width: 10px;
 }
 
-/* Layout */
+html::-webkit-scrollbar-track {
+    background: #FEFEFA;
+    border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: #8c9e00;
+    border-radius: 10px;
+    border: 2px solid #FEFEFA;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: #b9d01f;
+}
+
+/* Scrollbar styling for .sidebar-links */
+.sidebar-links::-webkit-scrollbar {
+    width: 8px;
+}
+.sidebar-links::-webkit-scrollbar-thumb {
+    background: #EBF374;
+    border-radius: 6px;
+}
+.sidebar-links {
+    scrollbar-width: thin;
+    scrollbar-color: #EBF374 #FEFEFA;
+}
+
+/* Scrollbar styling for custom select options */
+.custom-select-options::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-select-options::-webkit-scrollbar-thumb {
+    background: #7d8332;
+    border-radius: 4px;
+}
+.custom-select-options {
+    scrollbar-width: thin;
+    scrollbar-color: #7d8332 #FEFEFA;
+}
+
+/* Root and layout */
+#root {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 .app-root {
     display: flex;
-    min-height: 100%;
-    background-color: var(--color-background-light);
-    color: var(--color-primary-dark);
-    overflow-x: hidden;
+    flex-grow: 1;
     position: relative;
+    background-color: #FEFEFA;
+    color: #151603;
+    transition: padding-left 0.3s ease-in-out;
 }
 
-/* Overlay (mobile) */
 .app-root.sidebar-open-overlay::before {
     content: '';
     position: fixed;
@@ -48,7 +93,7 @@ html, body, #root {
     z-index: 90;
     opacity: 1;
     visibility: visible;
-    transition: opacity var(--transition-speed), visibility var(--transition-speed);
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
 @media (min-width: 769px) {
@@ -63,14 +108,14 @@ html, body, #root {
     top: 0;
     left: 0;
     bottom: 0;
-    width: var(--sidebar-width-open);
-    background: linear-gradient(to bottom, var(--color-sidebar-gradient-start), var(--color-background-light));
+    width: 18rem;
+    background: linear-gradient(to bottom, #fbffc6, #FEFEFA);
     padding: 2rem 1.5rem;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     z-index: 100;
-    transition: transform var(--transition-speed), width var(--transition-speed), padding var(--transition-speed);
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out, padding 0.3s ease-in-out;
     transform: translateX(-100%);
 }
 
@@ -83,23 +128,23 @@ html, body, #root {
     pointer-events: none;
 }
 
-/* Desktop sidebar */
 @media (min-width: 769px) {
     .sidebar {
-        /* FIXED: Changed to sticky to keep it visible on scroll */
-        position: sticky;
+        position: fixed;
         top: 0;
-        height: 100vh; /* Set height to viewport for sticky positioning */
+        bottom: 0;
+        height: 100vh;
         transform: translateX(0);
+        flex-shrink: 0;
     }
 
     .sidebar.open {
-        width: var(--sidebar-width-open);
+        width: 18rem;
         padding: 2rem 1.5rem;
     }
 
     .sidebar.closed {
-        width: var(--sidebar-width-closed-visual);
+        width: 0;
         padding: 0;
         overflow: hidden;
         box-shadow: none;
@@ -124,8 +169,8 @@ html, body, #root {
     align-items: center;
     margin-bottom: 3rem;
     padding-right: 1.5rem;
-    transition: opacity var(--fade-speed);
-    flex-shrink: 0; /* Prevent header from shrinking */
+    transition: opacity 0.2s ease-in-out;
+    flex-shrink: 0;
 }
 
 .sidebar-title {
@@ -140,13 +185,17 @@ html, body, #root {
     font-size: 1.8rem;
     padding: 0.5rem;
     cursor: pointer;
-    transition: opacity var(--fade-speed);
+    transition: opacity 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-toggle-btn:hover {
-    color: var(--color-primary-dark);
+    color: #151603;
     opacity: 0.8;
     border: 2px solid black;
+    border-radius: 0.5rem;
 }
 
 .sidebar-links {
@@ -154,8 +203,7 @@ html, body, #root {
     flex-direction: column;
     gap: 1rem;
     flex-grow: 1;
-    transition: opacity var(--fade-speed);
-    /* FIXED: Allow links to scroll if they overflow the sidebar's height */
+    transition: opacity 0.2s ease-in-out;
     overflow-y: auto;
 }
 
@@ -174,15 +222,15 @@ html, body, #root {
 }
 
 .sidebar-link span {
-    transition: opacity var(--fade-speed);
+    transition: opacity 0.2s ease-in-out;
 }
 
 .sidebar-link:hover {
-    background-color: var(--color-sidebar-link-hover);
+    background-color: #EBF37466;
 }
 
 .sidebar-link.active {
-    background-color: var(--color-sidebar-link-active);
+    background-color: #EBF37480;
     font-weight: bold;
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
 }
@@ -191,58 +239,72 @@ html, body, #root {
     width: 1.5rem;
     height: 1.5rem;
     flex-shrink: 0;
-    transition: opacity var(--fade-speed);
+    transition: opacity 0.2s ease-in-out;
 }
 
 /* Main content */
 .main-content {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: visible;
     position: relative;
-    padding: var(--main-content-padding);
-    min-width: 0; /* Prevents flexbox overflow issues */
+    padding: 2.5rem;
+    min-width: 0;
+    background-color: #FEFEFA;
+    z-index: 10;
+    min-height: 0;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.content-inner {
+    min-height: 100%;
+    position: relative;
 }
 
 @media (min-width: 769px) {
-    .main-content {
-        padding-left: var(--reserved-left-space-for-hamburger);
+    .app-root.sidebar-open-overlay {
+        padding-left: calc(18rem + 1rem);
+    }
+
+    .app-root.sidebar-open-overlay .main-content .content-inner {
+        left: 0;
+        top: -0.7rem;
     }
 }
 
 /* Toggle button */
 .main-content-toggle-btn {
     position: absolute;
-    top: var(--main-content-padding);
-    left: calc(var(--main-content-padding) / 2);
-    background-color: var(--color-sidebar-link-active);
-    color: var(--color-primary-dark);
+    top: 2.5rem;
+    left: 1.5rem;
+    background-color: #EBF37480;
+    color: #151603;
     border: none;
     border-radius: 0.5rem;
-    padding: var(--hamburger-button-padding);
+    padding: 0.75rem;
     cursor: pointer;
     z-index: 50;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.2s ease, left 0.3s ease-in-out;
 }
 
 .main-content-toggle-btn:hover {
-    background-color: var(--color-sidebar-link-hover);
+    background-color: #EBF37466;
     transform: scale(1.05);
 }
 
 .toggle-icon {
-    width: var(--hamburger-icon-size);
-    height: var(--hamburger-icon-size);
-    stroke: var(--color-primary-dark);
+    width: 1.5rem;
+    height: 1.5rem;
+    stroke: #151603;
 }
 
 /* Decorative */
 .decorative-circle {
     position: absolute;
-    background-color: var(--color-decorative-circle);
+    background-color: rgba(235, 243, 116, 0.4);
     border-radius: 50%;
     z-index: 0;
 }
@@ -262,3 +324,4 @@ html, body, #root {
     left: 0;
     transform: translate(-25%, 25%);
 }
+
