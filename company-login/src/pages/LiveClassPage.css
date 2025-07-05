@@ -631,3 +631,71 @@
     color: #9CA3AF;
     box-shadow: none;
 }
+
+
+.video-player-view {
+  padding: 20px;
+  background-color: #f9f9f9; /* A slightly different background to distinguish the view */
+  border-radius: 8px;
+}
+
+.back-to-list-btn {
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  border: 1px solid #ccc; /* Less prominent than a primary button */
+}
+
+.recorded-video-player-container {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.recorded-video-player-container h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Styles for the Doubt Section */
+.doubt-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.doubt-title {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.doubt-subtitle {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.doubt-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.doubt-form .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #34495e;
+}
+
+.doubt-form .input-field { /* This should leverage your existing input-field styles */
+  width: 100%;
+}
+
+.doubt-form textarea.input-field {
+  resize: vertical; /* Allow users to resize the textarea vertically */
+  min-height: 100px;
+}

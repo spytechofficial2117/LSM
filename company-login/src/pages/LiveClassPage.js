@@ -1,6 +1,62 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import CustomAlertDialog from '../components/CustomAlertDialog';
+import RecordedVideoPlayer from '../components/RecordedVideoPlayer'; 
 import './LiveClassPage.css';
+
+
+// New Doubt Clarification Section Component
+
+const DoubtSection = ({ className, onSubmitDoubt }) => {
+  const [name, setName] = useState('');
+  const [question, setQuestion] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name.trim() || !question.trim()) {
+      alert('Please fill in both your name and your question.');
+      return;
+    }
+    // Pass the doubt details to the parent component
+    onSubmitDoubt({ name, question, className });
+    // Reset form fields
+    setName('');
+    setQuestion('');
+  };
+
+  return (
+    <div className="doubt-section">
+      <h3 className="doubt-title">Have a question about "{className}"?</h3>
+      <p className="doubt-subtitle">Our instructors will get back to you shortly.</p>
+      <form onSubmit={handleSubmit} className="doubt-form">
+        <div className="form-group">
+          <label htmlFor="userName" className="form-label">Your Name</label>
+          <input
+            type="text"
+            id="userName"
+            className="input-field"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="userQuestion" className="form-label">Your Question</label>
+          <textarea
+            id="userQuestion"
+            className="input-field"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Type your question here..."
+            rows="4"
+            required
+          />
+        </div>
+        <button type="submit" className="btn-primary">Submit Question</button>
+      </form>
+    </div>
+  );
+};
 
 const LiveClassPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -18,18 +74,20 @@ const LiveClassPage = () => {
   const [filterDateRange, setFilterDateRange] = useState('All Dates');
 
   const [allClasses, setAllClasses] = useState([
-    { id: 'lc1', name: "Introduction to AI", dateTime: new Date(Date.now() + 86400000).toISOString(), duration: "1 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Google Meet' },
-    { id: 'lc2', name: "Advanced Calculus", dateTime: new Date(Date.now() + 5 * 86400000).toISOString(), duration: "1.5 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: true, platform: 'Google Meet' },
-    { id: 'lc3', name: "Web Development Basics", dateTime: new Date(Date.now() - 2 * 86400000).toISOString(), duration: "2 hr", status: "Completed", recordedLink: "https://example.com/dummy-recorded-link", shouldRecord: true, platform: 'Google Meet' },
-    { id: 'lc4', name: "Data Structures & Algorithms", dateTime: new Date(Date.now() + 2 * 86400000).toISOString(), duration: "1 hr 15 min", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", platform: 'Zoom' },
-    { id: 'lc5', name: "Machine Learning Fundamentals", dateTime: new Date(Date.now() + 10 * 86400000).toISOString(), duration: "2 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: true, platform: 'Google Meet' },
-    { id: 'lc6', name: "Cybersecurity Essentials", dateTime: new Date(Date.now() - 5 * 86400000).toISOString(), duration: "1 hr", status: "Completed", shouldRecord: false, platform: 'Google Meet' },
-    { id: 'lc7', name: "Active Session 1", dateTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(), duration: "1 hr", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Google Meet' },
-    { id: 'lc8', name: "Active Session 2 (Recording)", dateTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), duration: "45 min", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Zoom' },
-    { id: 'lc9', name: "Python Programming Intro", dateTime: new Date(Date.now() - 15 * 86400000).toISOString(), duration: "1.5 hr", status: "Completed", recordedLink: "https://example.com/dummy-recorded-link", shouldRecord: true, platform: 'Google Meet' },
+    { id: 'lc1', name: "Introduction to AI", dateTime: new Date(Date.now() + 86400000).toISOString(), duration: "1 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Google Meet', subject: 'AI' },
+    { id: 'lc2', name: "Advanced Calculus", dateTime: new Date(Date.now() + 5 * 86400000).toISOString(), duration: "1.5 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: true, platform: 'Google Meet', subject: 'Calculus' },
+    { id: 'lc3', name: "Web Development Basics", dateTime: new Date(Date.now() - 2 * 86400000).toISOString(), duration: "2 hr", status: "Completed", recordedLink: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", shouldRecord: true, platform: 'Google Meet', subject: 'Development' },
+    { id: 'lc4', name: "Data Structures & Algorithms", dateTime: new Date(Date.now() + 2 * 86400000).toISOString(), duration: "1 hr 15 min", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", platform: 'Zoom', subject: 'Data Structures' },
+    { id: 'lc5', name: "Machine Learning Fundamentals", dateTime: new Date(Date.now() + 10 * 86400000).toISOString(), duration: "2 hr", status: "Upcoming", liveLink: "https://example.com/dummy-video-link", shouldRecord: true, platform: 'Google Meet', subject: 'Machine Learning' },
+    { id: 'lc6', name: "Cybersecurity Essentials", dateTime: new Date(Date.now() - 5 * 86400000).toISOString(), duration: "1 hr", status: "Completed", shouldRecord: false, platform: 'Google Meet', recordedLink: null, subject: 'Cybersecurity' },
+    { id: 'lc7', name: "Active Session 1", dateTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(), duration: "1 hr", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Google Meet', subject: 'General' },
+    { id: 'lc8', name: "Active Session 2 (Recording)", dateTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), duration: "45 min", status: "Ongoing", liveLink: "https://example.com/dummy-video-link", shouldRecord: false, platform: 'Zoom', subject: 'General' },
+    { id: 'lc9', name: "Python Programming Intro", dateTime: new Date(Date.now() - 15 * 86400000).toISOString(), duration: "1.5 hr", status: "Completed", recordedLink: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", shouldRecord: true, platform: 'Google Meet', subject: 'Python' },
   ]);
 
   const [alertConfig, setAlertConfig] = useState(null);
+
+  const [selectedRecording, setSelectedRecording] = useState(null);
 
   const parseDurationToMillis = (durationStr) => {
     let totalMillis = 0;
@@ -57,7 +115,7 @@ const LiveClassPage = () => {
       const actualClassDuration = classDurationMillis > 0 ? classDurationMillis : 60 * 60 * 1000;
       const classEndTime = classStartTime + actualClassDuration;
 
-      let newStatus = cls.status;
+      let newStatus = cls.status; 
       if (now < classStartTime) {
         newStatus = "Upcoming";
       } else if (now >= classStartTime && now < classEndTime) {
@@ -68,13 +126,13 @@ const LiveClassPage = () => {
       return { ...cls, status: newStatus };
     });
     return updatedClasses;
-  }, [allClasses]);
+  }, [allClasses]); 
 
   const [displayClasses, setDisplayClasses] = useState([]);
 
   useEffect(() => {
     setDisplayClasses(getFilteredClasses());
-  }, [allClasses, getFilteredClasses]);
+  }, [allClasses, getFilteredClasses]); 
 
   const ongoingClasses = displayClasses
     .filter(cls => cls.status === "Ongoing")
@@ -104,7 +162,7 @@ const LiveClassPage = () => {
       );
     }
     if (filterSubject !== 'All Subjects') {
-      filtered = filtered.filter(cls => cls.name.toLowerCase().includes(filterSubject.toLowerCase()));
+      filtered = filtered.filter(cls => cls.subject?.toLowerCase() === filterSubject.toLowerCase());
     }
     if (filterDateRange !== 'All Dates') {
       const now = Date.now();
@@ -123,6 +181,12 @@ const LiveClassPage = () => {
   const recordedClasses = getFilteredRecordedClasses();
 
   const handleLiveClassAction = (action, classId, className, link = null) => {
+    if (action === 'Watch Recording' && link) {
+      const classToWatch = allClasses.find(c => c.id === classId);
+      setSelectedRecording(classToWatch);
+      return; 
+    }
+
     let message = '';
     if (action === 'Join Live' && link) {
       message = `Attempting to join live class: "${className}". This will open in a new window/tab.`;
@@ -130,21 +194,24 @@ const LiveClassPage = () => {
     } else if (action === 'Record') {
       const classToRecord = allClasses.find(c => c.id === classId);
       const isOngoing = ongoingClasses.some(c => c.id === classId);
-      const isCurrentlyRecording = isClassCurrentlyRecording(classId);
-      
-      if(isCurrentlyRecording){
+      const isCurrentlyRecording = isClassCurrentlyRecording(classId); 
+
+      if (isCurrentlyRecording) {
         setAlertConfig({
-          message : `Are you sure you want to stop the recording "${className}"?`, // Corrected message for clarity
-          type : 'confirm', // Corrected syntax: comma instead of semicolon
-          onConfirm : () => { // Corrected syntax: added opening brace for arrow function body
-            setAlertConfig(null);
-            if(manualRecordingId === classId){ // Corrected strict equality
+          message: `Are you sure you want to stop the recording "${className}"?`,
+          type: 'confirm',
+          onConfirm: () => {
+            setAlertConfig(null); 
+            if (manualRecordingId === classId) {
               setManualRecordingId(null);
               message = `Manual recording for "${className}" has been stopped.`;
-            } else if(classToRecord?.shouldRecord && isOngoing){
+            } else if (classToRecord?.shouldRecord && isOngoing) {
               message = `Automatic recording for "${className}" has been stopped. (Simulated action)`;
+            } else {
+              message = `Recording for "${className}" was stopped.`; // Fallback for general stop
             }
-            setAlertConfig({
+
+            setAlertConfig({ 
               message: message,
               type: 'alert',
               onConfirm: () => setAlertConfig(null)
@@ -154,26 +221,36 @@ const LiveClassPage = () => {
         });
         return;
       }
-      else if (manualRecordingId) {
+      else if (manualRecordingId) { 
         const currentlyRecordingClass = allClasses.find(c => c.id === manualRecordingId);
         message = `Already manually recording "${currentlyRecordingClass?.name || 'another session'}". Please stop the current recording first to record "${className}".`;
-      } else {
+      } else { 
         setManualRecordingId(classId);
         message = `Recording for "${className}" has started. (Simulated action)`;
       }
-    } else if (action === 'Watch Recording' && link) {
-      message = `Opening recorded session for "${className}".`;
-      window.open(link, '_blank');
     } else {
       message = `${action} for "${className}" (ID: ${classId}) will be initiated. (Simulated action)`;
     }
-    if (!alertConfig || alertConfig.type !== 'confirm') { 
+    if (!alertConfig || alertConfig.type !== 'confirm') {
+      if (action !== 'Record' || ! isClassCurrentlyRecording(classId)) { 
         setAlertConfig({
-            message: message,
-            type: 'alert',
-            onConfirm: () => setAlertConfig(null)
+          message: message,
+          type: 'alert',
+          onConfirm: () => setAlertConfig(null)
         });
+      }
     }
+  };
+
+  // New handler for submitting a doubt
+  const handleDoubtSubmit = ({ name, question, className }) => {
+    console.log("Doubt Submitted:", { name, question, className });
+    // Here, you would typically send this data to your backend API
+    setAlertConfig({
+      message: `Hi ${name}, your question about "${className}" has been submitted successfully!`,
+      type: 'alert',
+      onConfirm: () => setAlertConfig(null)
+    });
   };
 
   const handleScheduleMeeting = (e) => {
@@ -190,7 +267,7 @@ const LiveClassPage = () => {
 
     const meetingDateTime = new Date(`${newMeetingDate}T${newMeetingTime}`);
     const now = Date.now();
-    const fiveMinutesAgo = now - (5 * 60 * 1000);
+    const fiveMinutesAgo = now - (5 * 60 * 1000); // 5 minutes in milliseconds
     if (isNaN(meetingDateTime.getTime()) || meetingDateTime.getTime() < fiveMinutesAgo) {
       setAlertConfig({
         message: 'Please select a valid date and time. For instant live, select current time or a time in the very recent past (within 5 minutes).',
@@ -202,18 +279,18 @@ const LiveClassPage = () => {
 
     let generatedLink = '';
     let linkMessage = '';
-    const actualLiveLink = 'https://example.com/dummy-video-link'; // Dummy link
-    const recordedLink = 'https://example.com/dummy-recorded-link'; // Dummy link
+    const actualLiveLink = 'https://example.com/dummy-video-link'; 
+    const recordedLink = 'https://example.com/dummy-recorded-link'; 
 
     if (newMeetingPlatform === 'Google Meet') {
       const eventTitle = encodeURIComponent(newMeetingName);
       const startIso = meetingDateTime.toISOString().replace(/[-:]|\.\d{3}/g, '').substring(0, 15) + 'Z';
-      const endIso = new Date(meetingDateTime.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]|\.\d{3}/g, '').substring(0, 15) + 'Z';
+      const endIso = new Date(meetingDateTime.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]|\.\d{3}/g, '').substring(0, 15) + 'Z'; // Assume 1 hour duration for calendar event
 
       generatedLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startIso}/${endIso}&details=Join your Google Meet session here: ${encodeURIComponent(actualLiveLink)}&sf=true&output=xml`;
       linkMessage = `Click to add to Google Calendar. The meeting link will be in the calendar event.`;
     } else if (newMeetingPlatform === 'Zoom') {
-      generatedLink = actualLiveLink;
+      generatedLink = actualLiveLink; // In a real app, this would be a real Zoom meeting URL
       linkMessage = `Your Zoom meeting has been simulated. Actual Zoom scheduling needs to be done via Zoom's platform.`;
     }
 
@@ -221,16 +298,16 @@ const LiveClassPage = () => {
       id: `lc-${Date.now()}`,
       name: newMeetingName,
       dateTime: meetingDateTime.toISOString(),
-      duration: "1 hr",
-      // **IMPORTANT CHANGE HERE**: Explicitly set the status of the new meeting based on time.
+      duration: "1 hr", 
+     
       status: meetingDateTime.getTime() < now ? "Ongoing" : "Upcoming",
-      liveLink: actualLiveLink,
+      liveLink: actualLiveLink, 
       platform: newMeetingPlatform,
       shouldRecord: newMeetingShouldRecord === 'yes',
       recordedLink: newMeetingShouldRecord === 'yes' ? recordedLink : null,
+      subject: 'Scheduled Class' 
     };
 
-    // Update allClasses. This will trigger the useEffect to re-filter displayClasses.
     setAllClasses(prevClasses => [...prevClasses, newMeeting]);
 
     setAlertConfig({
@@ -244,7 +321,7 @@ const LiveClassPage = () => {
     setTimeout(() => {
       setScheduledMeetingLink(null);
       setScheduledMeetingMessage(null);
-    }, 15000);
+    }, 15000); 
 
     setNewMeetingName('');
     setNewMeetingDate('');
@@ -271,22 +348,24 @@ const LiveClassPage = () => {
   };
 
   const isRecordButtonDisabled = (clsId) => {
-    const classObject = displayClasses.find(c => c.id === clsId); // Use displayClasses
+    const classObject = displayClasses.find(c => c.id === clsId);
     const isOngoing = ongoingClasses.some(c => c.id === clsId);
-    return (classObject?.shouldRecord && isOngoing  && manualRecordingId !== clsId) || (manualRecordingId && manualRecordingId !== clsId);
+    const isCurrentlyRecording = isClassCurrentlyRecording(clsId);
+    return (manualRecordingId && manualRecordingId !== clsId) || (classObject?.shouldRecord && isOngoing && !isCurrentlyRecording);
   };
 
   const getRecordButtonText = (clsId) => {
-    const classObject = displayClasses.find(c => c.id === clsId); // Use displayClasses
-    const isOngoing = ongoingClasses.some(c => c.id === clsId);
     const isCurrentlyRecording = isClassCurrentlyRecording(clsId);
-    if(isCurrentlyRecording){
-      return "Stop Recording"; // Changed to title case for consistency
+    if (isCurrentlyRecording) {
+      return "Stop Recording";
     }
-    else if (classObject?.shouldRecord && isOngoing) {
+    const classObject = displayClasses.find(c => c.id === clsId);
+    const isOngoing = ongoingClasses.some(c => c.id === clsId);
+
+    if (classObject?.shouldRecord && isOngoing) {
       return "Recording (Auto)";
     }
-    return 'Record'; // Changed to title case for consistency
+    return 'Record';
   };
 
   return (
@@ -399,7 +478,7 @@ const LiveClassPage = () => {
                 <div className="scheduled-link-display">
                   <span>{scheduledMeetingMessage || "Meeting Link:"} </span>
                   <a href={scheduledMeetingLink} target="_blank" rel="noopener noreferrer" className="meeting-link-text">
-                    {newMeetingPlatform === 'Google Meet' ? "Add to Google Calendar" : scheduledMeetingLink.substring(0, 40) + '...'}
+                    {newMeetingPlatform === 'Google Meet' ? "Add to Google Calendar" : (scheduledMeetingLink.length > 40 ? scheduledMeetingLink.substring(0, 40) + '...' : scheduledMeetingLink)}
                   </a>
                   <button onClick={() => handleCopyLink(scheduledMeetingLink)} className="copy-link-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="copy-icon">
@@ -512,85 +591,107 @@ const LiveClassPage = () => {
 
         {activeTab === 'recordings' && (
           <>
-            <h2 className="live-class-title">Recorded Classes & Sessions</h2>
-            <div className="recordings-filter-section">
-              <input
-                type="text"
-                placeholder="Search Recordings..."
-                className="input-field search-input"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <div className="select-wrapper">
-                <select
-                  className="input-field"
-                  value={filterSubject}
-                  onChange={(e) => setFilterSubject(e.target.value)}
+            {/* conditional rendering of video player */}
+            {selectedRecording ? (
+              // --- A. VIDEO PLAYER VIEW ---
+              <div className="video-player-view">
+                <button
+                  onClick={() => setSelectedRecording(null)}
+                  className="btn-secondary back-to-list-btn"
                 >
-                  <option value="All Subjects">All Subjects</option>
-                  <option value="AI">AI</option>
-                  <option value="Calculus">Calculus</option>
-                  <option value="Development">Development</option>
-                  <option value="Data Structures">Data Structures</option>
-                  <option value="Machine Learning">Machine Learning</option>
-                  <option value="Python">Python</option>
-                </select>
-                <span className="select-arrow">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
+                  &larr; Back to Recordings
+                </button>
+                <RecordedVideoPlayer videoUrl={selectedRecording.recordedLink} />
+                <DoubtSection
+                  className={selectedRecording.name}
+                  onSubmitDoubt={handleDoubtSubmit}
+                />
               </div>
-              <div className="select-wrapper">
-                <select
-                  className="input-field"
-                  value={filterDateRange}
-                  onChange={(e) => setFilterDateRange(e.target.value)}
-                >
-                  <option value="All Dates">All Dates</option>
-                  <option value="Last 7 Days">Last 7 Days</option>
-                  <option value="Last 30 Days">Last 30 Days</option>
-                </select>
-                <span className="select-arrow">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </div>
-            </div>
-
-            {recordedClasses.length === 0 ? (
-              <p className="no-classes-message">No recordings found matching your criteria.</p>
             ) : (
-              <div className="recordings-list">
-                {recordedClasses.map(cls => (
-                  <div key={cls.id} className="recording-card">
-                    <h3 className="recording-header">{cls.name}</h3>
-                    <p className="recording-details">
-                      Recorded on: {new Date(cls.dateTime).toLocaleString()}
-                    </p>
-                    <p className="recording-details">
-                      Duration: {cls.duration}
-                    </p>
-                    {cls.platform && <p className="recording-details">Platform: {cls.platform}</p>}
-                    <div className="recording-actions">
-                      <button
-                        onClick={() => handleLiveClassAction('Watch Recording', cls.id, cls.name, cls.recordedLink)}
-                        className="btn-primary watch-recording-btn"
-                      >
-                        Watch Recording
-                      </button>
-                    </div>
+              <>
+                <h2 className="live-class-title">Recorded Classes & Sessions</h2>
+                <div className="recordings-filter-section">
+                  <input
+                    type="text"
+                    placeholder="Search Recordings..."
+                    className="input-field search-input"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <div className="select-wrapper">
+                    <select
+                      className="input-field"
+                      value={filterSubject}
+                      onChange={(e) => setFilterSubject(e.target.value)}
+                    >
+                      <option value="All Subjects">All Subjects</option>
+                      <option value="AI">AI</option>
+                      <option value="Calculus">Calculus</option>
+                      <option value="Development">Development</option>
+                      <option value="Data Structures">Data Structures</option>
+                      <option value="Machine Learning">Machine Learning</option>
+                      <option value="Python">Python</option>
+                      <option value="Cybersecurity">Cybersecurity</option> {/* Added Cybersecurity for lc6 */}
+                      <option value="General">General</option> {/* Added General for lc7, lc8 */}
+                    </select>
+                    <span className="select-arrow">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </span>
                   </div>
-                ))}
-              </div>
-            )}
-            {recordedClasses.length > 5 && (
-              <div className="pagination">
-                <button className="pagination-btn" disabled>Previous</button>
-                <span className="pagination-info">Page 1 of X</span>
-                <button className="pagination-btn" disabled>Next</button>
-              </div>
+                  <div className="select-wrapper">
+                    <select
+                      className="input-field"
+                      value={filterDateRange}
+                      onChange={(e) => setFilterDateRange(e.target.value)}
+                    >
+                      <option value="All Dates">All Dates</option>
+                      <option value="Last 7 Days">Last 7 Days</option>
+                      <option value="Last 30 Days">Last 30 Days</option>
+                    </select>
+                    <span className="select-arrow">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                {recordedClasses.length === 0 ? (
+                  <p className="no-classes-message">No recordings found matching your criteria.</p>
+                ) : (
+                  <div className="recordings-list">
+                    {recordedClasses.map(cls => (
+                      <div key={cls.id} className="recording-card">
+                        <h3 className="recording-header">{cls.name}</h3>
+                        <p className="recording-details">
+                          Recorded on: {new Date(cls.dateTime).toLocaleString()}
+                        </p>
+                        <p className="recording-details">
+                          Duration: {cls.duration}
+                        </p>
+                        {cls.platform && <p className="recording-details">Platform: {cls.platform}</p>}
+                        <div className="recording-actions">
+                          <button
+                            onClick={() => handleLiveClassAction('Watch Recording', cls.id, cls.name, cls.recordedLink)}
+                            className="btn-primary watch-recording-btn"
+                          >
+                            Watch Recording
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {recordedClasses.length > 5 && (
+                  <div className="pagination">
+                    <button className="pagination-btn" disabled>Previous</button>
+                    <span className="pagination-info">Page 1 of X</span>
+                    <button className="pagination-btn" disabled>Next</button>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
@@ -600,7 +701,7 @@ const LiveClassPage = () => {
           message={alertConfig.message}
           type={alertConfig.type}
           onConfirm={alertConfig.onConfirm}
-          onCancel={alertConfig.onCancel}
+          onCancel={alertConfig.onCancel} // Ensure onCancel is passed if type is 'confirm'
         />
       )}
     </div>
