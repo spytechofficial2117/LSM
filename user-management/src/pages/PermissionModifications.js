@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './PermissionModifications.css';
 import PageTitle from '../components/ui/PageTitle';
 import CustomSelect from '../components/ui/CustomSelect';
-
 const PermissionModifications = ({ users, updateUsers }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -11,7 +10,6 @@ const PermissionModifications = ({ users, updateUsers }) => {
     const [permissionDepartment, setPermissionDepartment]= useState('Select Department');
     const [permissionYear, setPermissionYear]= useState('Select year');
     const [filteredUsers, setFilteredUsers] = useState([]);
-
     const handlePermissionRoleChange = (value) => {
         setPermissionRole(value);
     };
@@ -21,7 +19,6 @@ const PermissionModifications = ({ users, updateUsers }) => {
     const handlePermissionYearChange = (value) => {
         setPermissionYear(value);
     };
-
     const generateYears = () => {
         const currentYear = new Date().getFullYear();
         const years = ["Select year", "N/A"];
@@ -30,7 +27,6 @@ const PermissionModifications = ({ users, updateUsers }) => {
         }
         return years;
     };
-
     const toggleUserSelection = (id) => {
         setSelectedUsers(prev =>
             prev.includes(id) ? prev.filter(userId => userId !== id) : [...prev, id]
@@ -52,6 +48,7 @@ const PermissionModifications = ({ users, updateUsers }) => {
         if (selectedUsers.length === 1) {
             const userId = selectedUsers[0];
             setSelectedPermissions(userPermissions[userId] || []);
+            
             return;
         }
 
@@ -64,8 +61,6 @@ const PermissionModifications = ({ users, updateUsers }) => {
         setSelectedPermissions(commonPermissions);
 
     }, [selectedUsers, userPermissions]);
-
-
     const handleApplyChanges = () => {
         if (selectedUsers.length === 0) {
             alert('Please select at least one user.');
@@ -79,13 +74,11 @@ const PermissionModifications = ({ users, updateUsers }) => {
             });
             return newPermissions;
         });
-
         alert(`Applying the following permissions: ${selectedPermissions.join(', ') || 'None'} to ${selectedUsers.length} user(s).`);
 
         setSelectedPermissions([]);
         setSelectedUsers([]);
     };
-
     const permissions = ["View-only", "Edit Access", "Admin control"];
      useEffect(() => {
         let currentFilteredUsers = users;
@@ -96,6 +89,7 @@ const PermissionModifications = ({ users, updateUsers }) => {
 
         if (permissionDepartment !== 'Select Department') {
             currentFilteredUsers = currentFilteredUsers.filter(user => user.department === permissionDepartment);
+        
         }
 
         if (permissionYear !== 'Select year') {
@@ -108,7 +102,6 @@ const PermissionModifications = ({ users, updateUsers }) => {
         setSelectedUsers([]);
 
     }, [permissionRole, permissionDepartment, permissionYear, users]);
-
     return (
         <div className="permission-mod-page">
             <PageTitle
@@ -117,6 +110,7 @@ const PermissionModifications = ({ users, updateUsers }) => {
             />
 
             <div className="filter-box">
+                
                 <h3 className="filter-title">Filter Users</h3>
                 <div className="filter-grid">
                     <CustomSelect
@@ -126,16 +120,16 @@ const PermissionModifications = ({ users, updateUsers }) => {
                         onChange={handlePermissionRoleChange}
                     />
                     <CustomSelect
-                        label="Department"
+                         label="Department"
                         options={["Select Department","Computer Science","Mathematics", "Engineering","Biology","Arts","Administration"]}
                         value={permissionDepartment}
                         onChange={handlePermissionDepartmentChange}
                     />
-                    <CustomSelect
+                     <CustomSelect
                         label="Year"
                         options={generateYears()}
                         value={permissionYear}
-                        onChange={handlePermissionYearChange}
+                         onChange={handlePermissionYearChange}
                     />
                 </div>
             </div>
@@ -146,7 +140,7 @@ const PermissionModifications = ({ users, updateUsers }) => {
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th><input type="checkbox"
+                                 <th><input type="checkbox"
                                  onChange={(e) => {
                                     if (e.target.checked) {
                                         setSelectedUsers(filteredUsers.map(u=> u.id));
@@ -155,15 +149,16 @@ const PermissionModifications = ({ users, updateUsers }) => {
                                     }
                                 }}
                                 checked={selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length}
-                                disabled={filteredUsers.length === 0}
+                                 disabled={filteredUsers.length === 0}
                                 /></th>
                                 {['Name', 'Role', 'Department', 'Year'].map(header => (
-                                    <th key={header}>{header}</th>
+                                     <th key={header}>{header}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody>
-                            {filteredUsers.length > 0 ? (
+                         <tbody>
+                            {filteredUsers.length > 0 ?
+                            (
                             filteredUsers.map((user) => (
                                 <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected-row' : ''}>
                                     <td>
@@ -171,42 +166,43 @@ const PermissionModifications = ({ users, updateUsers }) => {
                                             type="checkbox"
                                             checked={selectedUsers.includes(user.id)}
                                             onChange={() => toggleUserSelection(user.id)}
-                                        />
+                                         />
                                     </td>
                                     <td>{user.name}</td>
-                                    <td>{user.role}</td>
+                                     <td>{user.role}</td>
                                     <td>{user.department}</td>
                                     <td>{user.year}</td>
-                                </tr>
+                                  </tr>
                             ))
                         ) : (
-                            <tr>
+                             <tr>
                                 <td colSpan='5' style={{textAlign: 'center', padding: '20px'}} >No users found matching the selected filters.</td>
                             </tr>
-                        )}
+                         )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <div className="permission-controls">
-                <h3 className="section-title">Assign/Revoke Permissions</h3>
+                 <h3 className="section-title">Assign/Revoke Permissions</h3>
                 <div className="permission-buttons">
                     {permissions.map(permission => (
                         <button
-                            key={permission}
-                            className={`btn ${selectedPermissions.includes(permission) ? 'btn-selected' : 'btn-secondary'}`}
+                             key={permission}
+                            className={`btn ${selectedPermissions.includes(permission) ?
+                            'btn-selected' : 'btn-secondary'}`}
                             onClick={() => togglePermissionSelection(permission)}
                         >
                             {permission}
-                        </button>
+                         </button>
                     ))}
                 </div>
             </div>
 
             <div className="action-buttons">
                 <button className="btn-confirm" onClick={handleApplyChanges}>Apply changes</button>
-            </div>
+             </div>
         </div>
     );
 };
