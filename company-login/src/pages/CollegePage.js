@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './CollegePage.css'; // Import the dedicated CSS file
 
 const CollegePage = () => {
-  const allStudents = [
+  const allStudents = useMemo(() =>[
     { id: 's1', name: "John Doe", college: "Example University", department: "Computer Science", year: "3rd Year", section: "A" },
     { id: 's2', name: "Jane Smith", college: "Another College", department: "Electrical Engineering", year: "2nd Year", section: "B" },
     { id: 's3', name: "Peter Jones", college: "Example University", department: "Computer Science", year: "4th Year", section: "C" },
     { id: 's4', name: "Alice Brown", college: "State College", department: "Mechanical Engineering", year: "1st Year", section: "A" },
     { id: 's5', name: "Bob White", college: "Example University", department: "Civil Engineering", year: "3rd Year", section: "B" },
-  ];
+  ], []);
 
-  const [collegeName, setCollegeName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [department, setDepartment] = useState('Select department');
   const [year, setYear] = useState('Select year');
   const [section, setSection] = useState('Select section');
@@ -22,21 +22,26 @@ const CollegePage = () => {
 
   const handleApplyFilters = useCallback(() => {
     let filteredStudents = allStudents.filter(student => {
-      const matchesCollege = collegeName ? student.college?.toLowerCase().includes(collegeName.toLowerCase()) : true;
+      
+        // New search logic for name or ID
+      const matchesSearchTerm = searchTerm ? 
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        student.id.toLowerCase().includes(searchTerm.toLowerCase()) 
+        : true;
       const matchesDepartment = department && department !== "Select department" ? student.department === department : true;
       const matchesYear = year && year !== "Select year" ? student.year === year : true;
       const matchesSection = section && section !== "Select section" ? student.section === section : true;
-      return matchesCollege && matchesDepartment && matchesYear && matchesSection;
+      return matchesSearchTerm && matchesDepartment && matchesYear && matchesSection;
     });
     setStudents(filteredStudents);
-  }, [collegeName, department, year, section]);
+  }, [searchTerm, department, year, section, allStudents]);
 
   const handleResetFilters = () => {
-    setCollegeName('');
+    setSearchTerm('');
     setDepartment('Select department');
     setYear('Select year');
     setSection('Select section');
-    setStudents(allStudents);
+    setStudents(allStudents); 
   };
 
   useEffect(() => {
@@ -50,14 +55,14 @@ const CollegePage = () => {
 
         <div className="filter-grid">
           <div className="form-field">
-            <label htmlFor="collegeName" className="form-label">College</label>
+            <label htmlFor="collegeName" className="form-label">Search</label>
             <input
               type="text"
               id="collegeName"
               className="input-field"
-              placeholder="Enter college name"
-              value={collegeName}
-              onChange={(e) => setCollegeName(e.target.value)}
+              placeholder="Student name or ID"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="select-wrapper form-field">
@@ -70,11 +75,12 @@ const CollegePage = () => {
             >
               {departments.map(dept => <option key={dept} value={dept}>{dept}</option>)}
             </select>
-            <span className="select-arrow">
-              <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
+              <span className="select-arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+
           </div>
           <div className="select-wrapper form-field">
             <label htmlFor="year" className="form-label">Year</label>
@@ -86,11 +92,12 @@ const CollegePage = () => {
             >
               {years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
-            <span className="select-arrow">
-              <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
+          <span className="select-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+
           </div>
           <div className="select-wrapper form-field">
             <label htmlFor="section" className="form-label">Section</label>
@@ -103,10 +110,11 @@ const CollegePage = () => {
               {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
             </select>
             <span className="select-arrow">
-              <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
               </svg>
             </span>
+
           </div>
         </div>
 
@@ -124,6 +132,7 @@ const CollegePage = () => {
               <table className="results-table">
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>College</th>
                     <th>Department</th>
@@ -134,6 +143,7 @@ const CollegePage = () => {
                 <tbody>
                   {students.map(student => (
                     <tr key={student.id}>
+                      <td>{student.id}</td>
                       <td>{student.name}</td>
                       <td>{student.college}</td>
                       <td>{student.department}</td>
