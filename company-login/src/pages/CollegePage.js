@@ -22,11 +22,10 @@ const CollegePage = () => {
 
   const handleApplyFilters = useCallback(() => {
     let filteredStudents = allStudents.filter(student => {
-      
-        // New search logic for name or ID
       const matchesSearchTerm = searchTerm ? 
         student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        student.id.toLowerCase().includes(searchTerm.toLowerCase()) 
+        student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.college.toLowerCase().includes(searchTerm.toLowerCase())
         : true;
       const matchesDepartment = department && department !== "Select department" ? student.department === department : true;
       const matchesYear = year && year !== "Select year" ? student.year === year : true;
@@ -60,7 +59,7 @@ const CollegePage = () => {
               type="text"
               id="collegeName"
               className="input-field"
-              placeholder="Student name or ID"
+              placeholder="Student name, ID or college"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
