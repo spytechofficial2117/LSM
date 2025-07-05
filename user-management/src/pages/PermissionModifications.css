@@ -93,7 +93,8 @@
 }
 
 .btn-selected {
-    background-color: #a8b81c; /* A darker shade to indicate selection */
+    background-color: #a8b81c;
+    /* A darker shade to indicate selection */
     color: #FEFEFA;
     border: 1px solid #a8b81c;
 }
