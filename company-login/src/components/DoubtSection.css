@@ -1,0 +1,206 @@
+.doubt-section {
+    background-color: #ffffff; 
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); 
+    margin-top: 2rem;
+    border: 1px solid #e0e0e0; 
+}
+
+
+.doubt-section h3 { 
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+
+.doubt-section .comment-input {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-direction: column; 
+    margin-bottom: 2rem; 
+}
+
+.doubt-section .comment-input textarea {
+    flex-grow: 1;
+    max-width: none; 
+    width: auto; 
+    padding: 0.85rem 1.2rem; /* Slightly more padding for the main input */
+    border: 1px solid #ced4da; /* Consistent border with other inputs */
+    border-radius: 8px;
+    font-size: 1.05rem; /* Slightly larger font for main input */
+    color: #343a40;
+    background-color: #f8f9fa; /* Consistent background with other inputs */
+    resize: vertical;
+    min-height: 30px; /* Make it taller by default */
+    max-height: 200px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doubt-section .comment-input textarea:focus {
+    border-color: #CBE220; /* Primary Green on focus */
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); /* Green focus glow */
+    outline: none;
+    background-color: #ffffff;
+    border: 1px;
+}
+
+/* Style for the "Post" button */
+.doubt-section .comment-input button { /* Targeting the button inside .comment-input */
+    padding: 0.85rem 1.8rem; /* Larger padding for main button */
+    font-size: 1.05rem; /* Larger font for main button */
+    font-weight: bold;
+    width: 100px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: hsl(158, 77%, 63%); /* Primary Green */
+    color: black;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    flex-shrink: 0; /* Prevent button from shrinking */
+    height: min-content; /* Adjust height to content */
+}
+
+.doubt-section .comment-input button:hover {
+    background-color: hsla(158, 77%, 63%, 0.777);/* Darker Green on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+}
+
+
+
+/* Comment Thread List Container (your `comment-thread-list` div) */
+.comment-thread-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Space between individual threads */
+}
+
+/* Individual Comment Thread (your `comment-thread` div for each question) */
+.comment-thread {
+    padding: 1.5rem;
+    background: #fffbe687; /* Light Yellow background for the comment thread (soft, inviting) */
+    border-radius: 10px;
+    border: 1px solid #ffeb82; /* Slightly darker yellow border */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Styling for the initial question within a thread */
+.comment-thread .question { /* Targeting the div with class "question" */
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    color: #343a40;
+    font-size: 1rem;
+}
+
+.comment-thread .question strong {
+    font-weight: 700;
+    color: #1e7e34; /* Darker Green for author names */
+    margin-right: 0.4rem;
+}
+
+/* Replies container */
+.comment-thread .replies {
+    margin-top: 1rem; /* Space above replies */
+    margin-left: 2rem; /* Indent replies slightly */
+    padding-left: 0.5rem; /* Padding for the line */
+    position: relative; /* For the reply line */
+}
+
+/* Vertical line for replies */
+.comment-thread .replies::before {
+    content: '';
+    position: absolute;
+    left: 0; /* Position the line at the start of the replies container */
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #ffd700; /* Bright Yellow line for replies */
+    border-radius: 1px;
+}
+
+/* Individual reply item */
+.comment-thread .reply { 
+    margin-bottom: 0.8rem;
+    padding: 0.5rem 0.8rem; 
+    background-color: #ffffff; 
+    border-radius: 8px;
+    border: 1px solid #ffe8b1; 
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.comment-thread .reply:last-child {
+    margin-bottom: 0; 
+}
+
+.comment-thread .reply em { 
+    font-weight: 600;
+    color: #218838; 
+    font-style: normal;
+    margin-right: 0.4rem;
+}
+
+/* Reply input box for each thread */
+.comment-thread .reply-box { 
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem; 
+    align-items: center; 
+}
+
+.comment-thread .reply-box textarea{
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #343a40;
+    min-height: 30px;
+    background-color: #f8f9fa;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comment-thread .reply-box textarea:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    outline: none;
+    background-color: #ffffff;
+}
+
+/* Reply button for each thread */
+.comment-thread .reply-box button {
+    padding: 0.7rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color:  hsl(158, 77%, 63%); /* Primary Green */
+    color: black;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+}
+
+.comment-thread .reply-box button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
+}
+
+.comment-thread .reply-box button:active {
+    transform: translateY(0);
+    background-color: #1e7e34;
+    box-shadow: none;
+}
+
+.reply-box textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 32px;
+  line-height: 1.4;
+}

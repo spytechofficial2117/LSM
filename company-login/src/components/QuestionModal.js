@@ -5,7 +5,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
     const [questionText, setQuestionText] = useState(questionToEdit?.question || '');
     const [questionType, setQuestionType] = useState(questionToEdit?.type || 'single');
     const [options, setOptions] = useState(questionToEdit?.options || [{ text: '', isCorrect: false }]);
-    const [score, setScore] = useState(questionToEdit?.score || 2);
+    const [score, setScore] = useState(questionToEdit?.score || 1);
 
     const [testCases, setTestCases] = useState(questionToEdit?.testCases || []);
     const [problemTitle, setProblemTitle] = useState(questionToEdit?.problemTitle || '');
@@ -35,7 +35,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
         if (questionToEdit) {
             setQuestionText(questionToEdit.question || '');
             setQuestionType(questionToEdit.type || 'single');
-            setScore(questionToEdit.score || 2);
+            setScore(questionToEdit.score || 1);
             setQuestionImageURL(questionToEdit.imageUrl || '');
             setQuestionImageFile(null); // Clear file input when editing
 
@@ -58,7 +58,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
             setQuestionText('');
             setQuestionType('single');
             setOptions([{ text: '', isCorrect: false }]);
-            setScore(2);
+            setScore(1);
             setTestCases([]);
             setProblemTitle('');
             setDifficultyLevel('');
@@ -346,7 +346,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                         onChange={(e) => setQuestionText(e.target.value)}
                     ></textarea>
                     {/* Placeholder for rich text editor if implemented */}
-                    <div className="rich-text-placeholder">
+                    {/* <div className="rich-text-placeholder">
                         <input type="checkbox" id="fontBIU" className="hidden" readOnly checked />
                         <label htmlFor="fontBIU" className="rich-text-checkbox-label">
                             <span className="rich-text-checkbox-icon-wrapper">
@@ -356,7 +356,7 @@ const QuestionModal = ({ addQuestion, updateQuestion, closeModal, questionToEdit
                             </span>
                             font BIU (Placeholder for rich text options)
                         </label>
-                    </div>
+                    </div> */}
 
                     {/* Image Upload Section */}
                     {questionType === 'coding' &&(
