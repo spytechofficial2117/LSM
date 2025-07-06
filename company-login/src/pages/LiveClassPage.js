@@ -2,65 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import CustomAlertDialog from '../components/CustomAlertDialog';
 import RecordedVideoPlayer from '../components/RecordedVideoPlayer'; 
 import './LiveClassPage.css';
-
-
-// New Doubt Clarification Section Component
-
-const DoubtSection = ({ className, onSubmitDoubt }) => {
-  const [name, setName] = useState('');
-  const [question, setQuestion] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!name.trim() || !question.trim()) {
-      alert('Please fill in both your name and your question.');
-      return;
-    }
-    // Pass the doubt details to the parent component
-    onSubmitDoubt({ name, question, className });
-    // Reset form fields
-    setName('');
-    setQuestion('');
-  };
-
-  return (
-    <div className="doubt-section">
-      <h3 className="doubt-title">Have a question about "{className}"?</h3>
-      <p className="doubt-subtitle">Our instructors will get back to you shortly.</p>
-      <form onSubmit={handleSubmit} className="doubt-form">
-        <div className="form-group">
-          <label htmlFor="userName" className="form-label">Your Name</label>
-          <input
-            type="text"
-            id="userName"
-            className="input-field"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="userQuestion" className="form-label">Your Question</label>
-          <textarea
-            id="userQuestion"
-            className="input-field"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type your question here..."
-            rows="4"
-            required
-          />
-        </div>
-        <button type="submit" className="btn-primary">Submit Question</button>
-      </form>
-    </div>
-  );
-};
+import DoubtSection from '../components/DoubtSection';
 
 const LiveClassPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
-  const [manualRecordingId, setManualRecordingId] = useState(null);
+  const [manualRecordingId, setManualRecordingIds] = useState([]);
   const [newMeetingName, setNewMeetingName] = useState('');
   const [newMeetingDate, setNewMeetingDate] = useState('');
   const [newMeetingTime, setNewMeetingTime] = useState('');
@@ -88,6 +34,8 @@ const LiveClassPage = () => {
   const [alertConfig, setAlertConfig] = useState(null);
 
   const [selectedRecording, setSelectedRecording] = useState(null);
+  const [doubtThreads, setDoubtThreads] = useState({});
+
 
   const parseDurationToMillis = (durationStr) => {
     let totalMillis = 0;
@@ -148,7 +96,8 @@ const LiveClassPage = () => {
   const isClassCurrentlyRecording = useCallback((clsId) => {
     const classObject = displayClasses.find(c => c.id === clsId);
     const isOngoing = ongoingClasses.some(c => c.id === clsId);
-    return (manualRecordingId === clsId) || (classObject?.shouldRecord && isOngoing);
+    const isManualRecording = manualRecordingId.includes(clsId);
+    return isManualRecording || (classObject?.shouldRecord && isOngoing);
   }, [displayClasses, ongoingClasses, manualRecordingId]);
 
   const rawRecordedClasses = displayClasses
@@ -179,79 +128,95 @@ const LiveClassPage = () => {
   };
 
   const recordedClasses = getFilteredRecordedClasses();
-
+  
   const handleLiveClassAction = (action, classId, className, link = null) => {
-    if (action === 'Watch Recording' && link) {
-      const classToWatch = allClasses.find(c => c.id === classId);
-      setSelectedRecording(classToWatch);
-      return; 
-    }
+  if (action === 'Watch Recording' && link) {
+    const classToWatch = allClasses.find(c => c.id === classId);
+    setSelectedRecording(classToWatch);
+    return;
+  }
 
-    let message = '';
-    if (action === 'Join Live' && link) {
-      message = `Attempting to join live class: "${className}". This will open in a new window/tab.`;
-      window.open(link, '_blank');
-    } else if (action === 'Record') {
-      const classToRecord = allClasses.find(c => c.id === classId);
-      const isOngoing = ongoingClasses.some(c => c.id === classId);
-      const isCurrentlyRecording = isClassCurrentlyRecording(classId); 
+  let message = '';
+  let isCurrentlyRecordingThisClass = false;
+  if (action === 'Join Live' && link) {
+    message = `Attempting to join live class: "${className}". This will open in a new window/tab.`;
+    window.open(link, '_blank');
+  } else if (action === 'Record') {
+    // const classToRecord = allClasses.find(c => c.id === classId);
+    // const isOngoing = ongoingClasses.some(c => c.id === classId);
+     isCurrentlyRecordingThisClass = isClassCurrentlyRecording(classId); 
+    // CHANGED: Use isClassCurrentlyRecording to determine if this specific class is recording
 
-      if (isCurrentlyRecording) {
-        setAlertConfig({
-          message: `Are you sure you want to stop the recording "${className}"?`,
-          type: 'confirm',
-          onConfirm: () => {
-            setAlertConfig(null); 
-            if (manualRecordingId === classId) {
-              setManualRecordingId(null);
-              message = `Manual recording for "${className}" has been stopped.`;
-            } else if (classToRecord?.shouldRecord && isOngoing) {
-              message = `Automatic recording for "${className}" has been stopped. (Simulated action)`;
-            } else {
-              message = `Recording for "${className}" was stopped.`; // Fallback for general stop
-            }
+    if (isCurrentlyRecordingThisClass) {
+      // If this class is currently recording (either manually or automatically), prompt to stop.
+      setAlertConfig({
+        message: `Are you sure you want to stop the recording "${className}"?`,
+        type: 'confirm',
+        onConfirm: () => {
+          setAlertConfig(null);
+          // CHANGED: Filter out the classId from the manualRecordingIds array
+          setManualRecordingIds(prevIds => prevIds.filter(id => id !== classId)); 
+          message = `Manual recording for "${className}" has been stopped.`;
+          
+          setAlertConfig({
+            message: message,
+            type: 'alert',
+            onConfirm: () => setAlertConfig(null)
+          });
+        },
+        onCancel: () => setAlertConfig(null)
+      });
+      return;
+    }
+    else { 
+      // Class is not currently recording. Start recording it manually.
+      // CHANGED: Add the classId to the manualRecordingIds array
+      setManualRecordingIds(prevIds => [...prevIds, classId]); 
+      message = `Recording for "${className}" has started. (Simulated action)`;
+    }
+  } else {
+    message = `${action} for "${className}" (ID: ${classId}) will be initiated. (Simulated action)`;
+  }
 
-            setAlertConfig({ 
-              message: message,
-              type: 'alert',
-              onConfirm: () => setAlertConfig(null)
-            });
-          },
-          onCancel: () => setAlertConfig(null)
-        });
-        return;
-      }
-      else if (manualRecordingId) { 
-        const currentlyRecordingClass = allClasses.find(c => c.id === manualRecordingId);
-        message = `Already manually recording "${currentlyRecordingClass?.name || 'another session'}". Please stop the current recording first to record "${className}".`;
-      } else { 
-        setManualRecordingId(classId);
-        message = `Recording for "${className}" has started. (Simulated action)`;
-      }
-    } else {
-      message = `${action} for "${className}" (ID: ${classId}) will be initiated. (Simulated action)`;
+  if (!alertConfig || alertConfig.type !== 'confirm') {
+    // CHANGED: Use isCurrentlyRecordingThisClass which is scoped correctly
+    if (action !== 'Record' || !isCurrentlyRecordingThisClass) { 
+      setAlertConfig({
+        message: message,
+        type: 'alert',
+        onConfirm: () => setAlertConfig(null)
+      });
     }
-    if (!alertConfig || alertConfig.type !== 'confirm') {
-      if (action !== 'Record' || ! isClassCurrentlyRecording(classId)) { 
-        setAlertConfig({
-          message: message,
-          type: 'alert',
-          onConfirm: () => setAlertConfig(null)
-        });
-      }
-    }
+  }
+};
+//handler for qn submissionn
+const handleSubmitQuestion = (className, text) => {
+  const newThread = {
+    id: Date.now(),
+    user: 'You',
+    text,
+    replies: []
   };
 
-  // New handler for submitting a doubt
-  const handleDoubtSubmit = ({ name, question, className }) => {
-    console.log("Doubt Submitted:", { name, question, className });
-    // Here, you would typically send this data to your backend API
-    setAlertConfig({
-      message: `Hi ${name}, your question about "${className}" has been submitted successfully!`,
-      type: 'alert',
-      onConfirm: () => setAlertConfig(null)
-    });
-  };
+  setDoubtThreads(prev => ({
+    ...prev,
+    [className]: [...(prev[className] || []), newThread]
+  }));
+};
+
+const handleSubmitReply = (className, questionId, replyText) => {
+  setDoubtThreads(prev => ({
+    ...prev,
+    [className]: prev[className].map(thread =>
+      thread.id === questionId
+        ? {
+            ...thread,
+            replies: [...thread.replies, { user: 'You', text: replyText }]
+          }
+        : thread
+    )
+  }));
+};
 
   const handleScheduleMeeting = (e) => {
     e.preventDefault();
@@ -348,15 +313,16 @@ const LiveClassPage = () => {
   };
 
   const isRecordButtonDisabled = (clsId) => {
-    const classObject = displayClasses.find(c => c.id === clsId);
-    const isOngoing = ongoingClasses.some(c => c.id === clsId);
-    const isCurrentlyRecording = isClassCurrentlyRecording(clsId);
-    return (manualRecordingId && manualRecordingId !== clsId) || (classObject?.shouldRecord && isOngoing && !isCurrentlyRecording);
+    // const classObject = displayClasses.find(c => c.id === clsId);
+    // const isOngoing = ongoingClasses.some(c => c.id === clsId);
+    // const isCurrentlyRecordingThisClass = isClassCurrentlyRecording(clsId);
+    // return (classObject?.shouldRecord && isOngoing && !isCurrentlyRecordingThisClass);
+    return false;
   };
 
   const getRecordButtonText = (clsId) => {
-    const isCurrentlyRecording = isClassCurrentlyRecording(clsId);
-    if (isCurrentlyRecording) {
+    const isCurrentlyRecordingThisClass = isClassCurrentlyRecording(clsId);
+    if (isCurrentlyRecordingThisClass) {
       return "Stop Recording";
     }
     const classObject = displayClasses.find(c => c.id === clsId);
@@ -604,8 +570,11 @@ const LiveClassPage = () => {
                 <RecordedVideoPlayer videoUrl={selectedRecording.recordedLink} />
                 <DoubtSection
                   className={selectedRecording.name}
-                  onSubmitDoubt={handleDoubtSubmit}
+                  doubts={doubtThreads}
+                  onSubmitQuestion={handleSubmitQuestion}
+                  onSubmitReply={handleSubmitReply}
                 />
+
               </div>
             ) : (
               <>
