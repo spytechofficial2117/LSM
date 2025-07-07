@@ -275,6 +275,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* Duplicated .btn-secondary, keep the first one */
 .btn-secondary {
     background-color: #56E9B3;
     color: #151603;
@@ -294,7 +295,7 @@
 
 .btn-secondary:hover {
     background-color: #4ADAA2;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0);
 }
 
 .red-background {
@@ -443,4 +444,227 @@
     font-size: 0.875rem;
     color: #6B7280;
     margin-top: 0.75rem;
+}
+
+/* Coding Question Specific Styles (ensure these are present if you have coding questions) */
+.coding-question-details {
+    margin-top: 1rem;
+    background-color: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.coding-question-details h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: #151603;
+    font-size: 1rem; /* Adjust if needed */
+    font-weight: 600;
+}
+
+.test-case-list {
+    list-style: none;
+    padding: 0;
+}
+
+.test-case-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.test-case-item pre {
+    background-color: #f4f4f4;
+    padding: 0.6rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #333;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.test-case-status {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.status-hidden {
+    background-color: #FFD700; /* Gold/Yellow */
+    color: #333;
+}
+
+.status-shown {
+    background-color: #32CD32; /* Lime Green */
+    color: white;
+}
+
+
+/* --- NEW: Tab Navigation Styles --- */
+.tab-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem; /* Space below tabs */
+    border-bottom: 1px solid #E5E7EB; /* Subtle line below tabs */
+    padding-bottom: 0.5rem; /* Space between buttons and line */
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 0.75rem 1.5rem; /* Consistent padding with buttons */
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6B7280; /* Neutral text color */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 3px solid transparent; /* For active tab underline */
+    margin: 0 0.5rem; /* Space between tab buttons */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.tab-button:hover {
+    color: #151603; /* Darker on hover */
+    border-bottom-color: #CBE220; /* Accent color on hover */
+}
+
+.tab-button.active {
+    color: #151603; /* Active tab text color */
+    border-bottom-color: #CBE220; /* Active tab accent underline */
+    font-weight: 600; /* Bolder for active tab */
+}
+
+/* --- NEW: Scheduled Tests Section Styles --- */
+
+
+.scheduled-tests-title {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #151603;
+    margin-bottom: 1.5rem; /* Spacing below title */
+    text-align: center;
+}
+
+.no-scheduled-tests-message {
+    color: #6B7280;
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+    font-size: 1rem;
+    background-color: #F8F8F8; /* Light background for empty state */
+    border: 1px dashed #D1D5DB;
+    border-radius: 0.5rem;
+    margin-top: 2rem;
+}
+
+.scheduled-tests-list {
+    display: grid;
+    gap: 1.5rem; /* Gap between test cards */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+}
+
+.test-card-scheduled {
+    background-color: #FEFEFA; /* White background for test cards */
+    border: 1px solid #E5E7EB; /* Light border */
+    border-radius: 0.75rem; /* Rounded corners */
+    padding: 1.5rem; /* Inner padding */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.test-name-scheduled {
+    font-size: 1.35rem; /* Slightly smaller than main title */
+    font-weight: 600;
+    color: #151603;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem; /* Space below name */
+    border-bottom: 1px solid #E5E7EB; /* Separator line */
+}
+
+.test-card-scheduled p {
+    font-size: 0.9rem; /* Consistent body text size */
+    color: #4B5563; /* Slightly darker grey for body text */
+    margin-bottom: 0.5rem; /* Space between lines */
+}
+
+.test-card-scheduled p strong {
+    color: #151603; /* Bold text for labels */
+    font-weight: 500;
+}
+
+.test-actions-scheduled {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between; /* This is key: pushes children to ends */
+    align-items: flex-end; /* Align items to the bottom if they have different heights */
+    gap: 0.75rem; /* Gap between left and right groups */
+    flex-wrap: wrap; /* Allow groups to wrap if space is tight */
+}
+
+.test-actions-left,
+.test-actions-right {
+    display: flex;
+    gap: 0.75rem; /* Gap between buttons within each group */
+    flex-wrap: wrap; /* Allow buttons within group to wrap */
+}
+
+/* Ensure buttons in these sections have consistent sizing */
+.test-actions-scheduled .btn-primary,
+.test-actions-scheduled .btn-secondary,
+.test-actions-scheduled .red-background {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 0.375rem;
+    box-shadow: none;
+    /* You can add min-width here if you want buttons to be a certain size */
+    /* min-width: 100px; */
+}
+
+.test-actions-scheduled .red-background {
+    color: white;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 1.25rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    /* Removed margin-right: auto; as justify-content: space-between handles positioning */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    white-space: nowrap; /* Prevent badge text from wrapping */
+}
+
+.status-active {
+    background-color: #28A745;
+    color: white;
+}
+
+/* Add responsive adjustments if needed */
+@media (max-width: 600px) {
+    .test-actions-scheduled {
+        flex-direction: column; /* Stack left and right groups */
+        align-items: center; /* Center them when stacked */
+    }
+    .test-actions-left,
+    .test-actions-right {
+        justify-content: center; /* Center buttons within groups */
+        width: 100%; /* Take full width when stacked */
+        margin-bottom: 0.75rem; /* Add space between stacked groups */
+    }
 }
