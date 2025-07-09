@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import QuestionModal from '../components/QuestionModal';
 import CustomAlertDialog from '../components/CustomAlertDialog';
-import './CreateTestPage.css'; // Import the dedicated CSS file
+import './CreateTestPage.css';
 
 const CreateTestPage = () => {
   const [testName, setTestName] = useState('');
@@ -19,6 +19,7 @@ const CreateTestPage = () => {
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [alertConfig, setAlertConfig] = useState(null);
+  const [activeTab, setActiveTab] = useState('configure');
 
   const getDescriptiveQuestionType = (type) => {
     switch (type) {
@@ -41,7 +42,6 @@ const CreateTestPage = () => {
         setQuestions([]);
         return;
       }
-
       const testData = tests.find(test => test.id === selectedTestId);
       if (testData) {
         setTestName(testData.name || '');
@@ -64,7 +64,6 @@ const CreateTestPage = () => {
     loadTest();
   }, [selectedTestId, tests]);
 
-
   const resetForm = () => {
     setTestName('');
     setTimeLimitHrs('');
@@ -80,17 +79,63 @@ const CreateTestPage = () => {
   };
 
   const handleCreateTestSubmit = () => {
+    if (!testName.trim()) {
+      setAlertConfig({
+        message: 'Please enter a test name.',
+        type: 'alert',
+        onConfirm: () => setAlertConfig(null)
+      });
+      return;
+      }
+        if (scheduleFrom && scheduleTo) {
+      const now = new Date();
+      now.setMilliseconds(0);
+
+      const fromDateTime = new Date(scheduleFrom);
+      const toDateTime = new Date(scheduleTo);
+
+      if (isNaN(fromDateTime.getTime()) || isNaN(toDateTime.getTime())) {
+          setAlertConfig({
+              message: 'Invalid date or time entered for scheduling. Please ensure both "Schedule From" and "Schedule To" are valid.',
+              type: 'alert',
+              onConfirm: () => setAlertConfig(null)
+          });
+          return;
+      }
+
+      // 1. Check if 'Schedule From' is in the past
+      if (fromDateTime < now) {
+        setAlertConfig({
+          message: 'The "Schedule From" date and time cannot be in the past when saving the configuration.',
+          type: 'alert',
+          onConfirm: () => setAlertConfig(null)
+        });
+        return;
+      }
+
+      // 2. Check if 'Schedule From' is strictly before 'Schedule To'
+      if (fromDateTime >= toDateTime) {
+        setAlertConfig({
+          message: 'The "Schedule From" date and time must be strictly before the "Schedule To" date and time when saving the configuration.',
+          type: 'alert',
+          onConfirm: () => setAlertConfig(null)
+        });
+        return;
+      }
+    }
+
     const newTest = {
       id: selectedTestId || `test-${Date.now()}`,
       name: testName,
       timeLimitHrs: timeLimitHrs,
       timeLimitMin: timeLimitMin,
       scheduleFrom: scheduleFrom,
-      scheduleTo: scheduleTo,
+      scheduleTo: scheduleTo,     
       minGrade: minGrade,
       passGradeEnabled: passGradeEnabled,
       createdAt: Date.now(),
       questions: questions,
+      status: selectedTestId ? (tests.find(t => t.id === selectedTestId)?.status || 'Draft') : 'Draft',
     };
 
     if (selectedTestId) {
@@ -104,7 +149,7 @@ const CreateTestPage = () => {
       setTests([...tests, newTest]);
       setSelectedTestId(newTest.id);
       setAlertConfig({
-        message: 'Test configured successfully!',
+        message: 'Test configured successfully! You can now add questions.',
         type: 'alert',
         onConfirm: () => setAlertConfig(null)
       });
@@ -112,20 +157,74 @@ const CreateTestPage = () => {
   };
 
   const handleScheduleTest = () => {
-    if (!selectedTestId || !testName || !scheduleFrom || !scheduleTo) {
+    if (!selectedTestId) {
       setAlertConfig({
-        message: 'Please select a test, provide a test name, and set both schedule dates to schedule.',
+        message: 'Please save the test configuration before scheduling.',
+        type: 'alert',
+        onConfirm: () => setAlertConfig(null)
+      });
+      return;
+    }
+    if (!scheduleFrom || !scheduleTo) {
+      setAlertConfig({
+        message: 'Please set both "Schedule From" and "Schedule To" dates and times to schedule the test.',
         type: 'alert',
         onConfirm: () => setAlertConfig(null)
       });
       return;
     }
 
-    const message = `Test "${testName}" (ID: ${selectedTestId}) scheduled from ${scheduleFrom} to ${scheduleTo}.`;
+
+    const fromDateTime = new Date(scheduleFrom);
+    const toDateTime = new Date(scheduleTo);
+
+    if (fromDateTime >= toDateTime) {
+      setAlertConfig({
+        message: 'The "Schedule From" date and time must be before the "Schedule To" date and time.',
+        type: 'alert',
+        onConfirm: () => setAlertConfig(null)
+      });
+      return; 
+    }
+
+    const message = `Test "${testName}" (ID: ${selectedTestId}) scheduled from ${formatDateTime(scheduleFrom)} to ${formatDateTime(scheduleTo)}.`;
     setAlertConfig({
       message: message,
       type: 'alert',
-      onConfirm: () => setAlertConfig(null)
+      onConfirm: () => {
+        setAlertConfig(null);
+        setTests(prevTests => prevTests.map(test =>
+          test.id === selectedTestId ? { ...test, scheduleFrom, scheduleTo, status: 'Scheduled' } : test
+        ));
+      }
+    });
+  };
+
+  const handleStartTestNow = (testId) => {
+    setAlertConfig({
+      message: "Are you sure you want to start this test now? This will overwrite its scheduled start time.",
+      type: 'confirm',
+      onConfirm: () => {
+        setAlertConfig(null);
+        setTests(prevTests => prevTests.map(test => {
+          if (test.id === testId) {
+            const now = new Date();
+            const nowFormatted = now.toISOString().slice(0, 16);
+            return {
+              ...test,
+              scheduleFrom: nowFormatted,
+              status: 'Active'
+            };
+          }
+          return test;
+        }));
+        setAlertConfig({
+          message: 'Test started successfully!',
+          type: 'alert',
+          onConfirm: () => setAlertConfig(null)
+        });
+      },
+      onCancel: () => setAlertConfig(null)
     });
   };
 
@@ -183,7 +282,9 @@ const CreateTestPage = () => {
       onConfirm: () => {
         setAlertConfig(null);
         setTests(tests.filter(test => test.id !== testId));
-        resetForm();
+        if (selectedTestId === testId) {
+          resetForm();
+        }
       },
       onCancel: () => setAlertConfig(null)
     });
@@ -210,8 +311,8 @@ const CreateTestPage = () => {
       testName: testName,
       timeLimitHrs: timeLimitHrs,
       timeLimitMin: timeLimitMin,
-      scheduleFrom: scheduleFrom,
-      scheduleTo: scheduleTo,
+      scheduleFrom: scheduleFrom, // will include time
+      scheduleTo: scheduleTo,     // will include time
       minGrade: minGrade,
       passGradeEnabled: passGradeEnabled,
     };
@@ -247,231 +348,316 @@ const CreateTestPage = () => {
     }
   };
 
+  const scheduledTests = tests.filter(test => test.scheduleFrom && test.scheduleTo);
+
+  // Helper to format date and time for display
+  const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return 'N/A';
+    try {
+      const date = new Date(dateTimeString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (error) {
+      console.error("Error formatting date/time:", error);
+      return dateTimeString;
+    }
+  };
+
+
   return (
     <div className="create-test-page">
       <div className="create-test-container">
-        <h2 className="create-test-title">Configure your test</h2>
+        {/* Tab Navigation */}
+        <div className="tab-navigation">
+          <button
+            className={`tab-button ${activeTab === 'configure' ? 'active' : ''}`}
+            onClick={() => setActiveTab('configure')}
+          >
+            Configure Test
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'scheduled' ? 'active' : ''}`}
+            onClick={() => setActiveTab('scheduled')}
+          >
+            Scheduled Tests ({scheduledTests.length})
+          </button>
+        </div>
 
-        <div className="config-card">
-          <div className="config-row">
-            <label htmlFor="selectPreset" className="form-label">Load Preset:</label>
-            <div className="select-wrapper config-item">
-              <select
-                id="selectPreset"
-                className="input-field"
-                value={selectedPresetId}
-                onChange={(e) => {
-                  setSelectedPresetId(e.target.value);
-                  if (e.target.value) {
-                    handleLoadPreset(e.target.value);
-                  }
-                }}
-              >
-                <option value="">-- Select a Preset --</option>
-                {presets.map(preset => (
-                  <option key={preset.id} value={preset.id}>{preset.name}</option>
-                ))}
-              </select>
-              <span className="select-arrow">
-                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </span>
-            </div>
-            <button onClick={handleSavePreset} className="btn-secondary px-4 py-2">Save as Preset</button>
-          </div>
+        {/* Conditional Rendering based on activeTab */}
+        {activeTab === 'configure' && (
+          <>
+            <h2 className="create-test-title">Configure your test</h2>
 
-          <div className="config-row">
-            <label htmlFor="selectTest" className="form-label">Load Existing Test:</label>
-            <div className="select-wrapper config-item">
-              <select
-                id="selectTest"
-                className="input-field"
-                value={selectedTestId}
-                onChange={(e) => setSelectedTestId(e.target.value)}
-              >
-                <option value="">-- Select a Test --</option>
-                {tests.map(test => (
-                  <option key={test.id} value={test.id}>{test.name}</option>
-                ))}
-              </select>
-              <span className="select-arrow">
-                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </span>
-            </div>
-            <button onClick={resetForm} className="btn-secondary px-4 py-2">New Test</button>
-          </div>
+            <div className="config-card">
+              <div className="config-row">
+                <label htmlFor="selectPreset" className="form-label">Load Preset:</label>
+                <div className="select-wrapper config-item">
+                  <select
+                    id="selectPreset"
+                    className="input-field"
+                    value={selectedPresetId}
+                    onChange={(e) => {
+                      setSelectedPresetId(e.target.value);
+                      if (e.target.value) {
+                        handleLoadPreset(e.target.value);
+                      }
+                    }}
+                  >
+                    <option value="">-- Select a Preset --</option>
+                    {presets.map(preset => (
+                      <option key={preset.id} value={preset.id}>{preset.name}</option>
+                    ))}
+                  </select>
+                  <span className="select-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </div>
+                <button onClick={handleSavePreset} className="btn-secondary px-4 py-2">Save as Preset</button>
+              </div>
 
-          <div>
-            <label htmlFor="testName" className="form-label">Test Name:</label>
-            <input
-              type="text"
-              id="testName"
-              className="input-field"
-              placeholder="Enter your test name"
-              value={testName}
-              onChange={(e) => setTestName(e.target.value)}
-            />
-          </div>
-          
-          <div className="flex flex-col gap-4">
-            <div className="config-item md-w-1-2">
-              <label htmlFor="timeLimit" className="form-label">Time Limit:</label>
-              <div className="time-limit-inputs">
+              <div className="config-row">
+                <label htmlFor="selectTest" className="form-label">Load Existing Test:</label>
+                <div className="select-wrapper config-item">
+                  <select
+                    id="selectTest"
+                    className="input-field"
+                    value={selectedTestId}
+                    onChange={(e) => setSelectedTestId(e.target.value)}
+                  >
+                    <option value="">-- Select a Test --</option>
+                    {tests.map(test => (
+                      <option key={test.id} value={test.id}>{test.name}</option>
+                    ))}
+                  </select>
+                  <span className="select-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </span>
+                </div>
+                <button onClick={resetForm} className="btn-secondary px-4 py-2">New Test</button>
+              </div>
+
+              <div>
+                <label htmlFor="testName" className="form-label">Test Name:</label>
                 <input
-                  type="number"
-                  id="timeLimitHrs"
+                  type="text"
+                  id="testName"
                   className="input-field"
-                  placeholder="Hrs"
-                  value={timeLimitHrs}
-                  onChange={(e) => setTimeLimitHrs(e.target.value)}
-                />
-                <input
-                  type="number"
-                  id="timeLimitMin"
-                  className="input-field"
-                  placeholder="MIN"
-                  value={timeLimitMin}
-                  onChange={(e) => setTimeLimitMin(e.target.value)}
+                  placeholder="Enter your test name"
+                  value={testName}
+                  onChange={(e) => setTestName(e.target.value)}
                 />
               </div>
-            </div>
-            <div className="config-item md-w-1-2">
-                <div className="schedule-date-inputs">
-                  <div>
-                    <label htmlFor="scheduleFrom" className="form-label">Schedule From:</label>
+
+              <div className="flex flex-col gap-4">
+                <div className="config-item md-w-1-2">
+                  <label htmlFor="timeLimit" className="form-label">Time Limit:</label>
+                  <div className="time-limit-inputs">
                     <input
-                      type="date"
-                      id="scheduleFrom"
+                      type="number"
+                      id="timeLimitHrs"
                       className="input-field"
-                      value={scheduleFrom}
-                      onChange={(e) => setScheduleFrom(e.target.value)}
+                      placeholder="Hrs"
+                      value={timeLimitHrs}
+                      onChange={(e) => setTimeLimitHrs(e.target.value)}
                     />
-                  </div>
-                  <div>
-                    <label htmlFor="scheduleTo" className="form-label">Schedule To:</label>
                     <input
-                      type="date"
-                      id="scheduleTo"
+                      type="number"
+                      id="timeLimitMin"
                       className="input-field"
-                      value={scheduleTo}
-                      onChange={(e) => setScheduleTo(e.target.value)}
+                      placeholder="MIN"
+                      value={timeLimitMin}
+                      onChange={(e) => setTimeLimitMin(e.target.value)}
                     />
                   </div>
                 </div>
-            </div>
-          </div>
-
-          <div className="grading-section">
-            <h3 className="grading-title">Grading</h3>
-            <div className="grading-checkbox-wrapper">
-              <input 
-                type="checkbox" 
-                id="passGradeEnabled" 
-                className="accent-CBE220 rounded-sm"
-                checked={passGradeEnabled}
-                onChange={(e) => setPassGradeEnabled(e.target.checked)}
-              />
-              <label htmlFor="passGradeEnabled" className="form-label">Enable Pass/Fail Grading</label>
-            </div>
-            {passGradeEnabled && (
-              <div className="grading-min-score">
-                <span className="form-label">Minimum Pass Score:</span>
-                <input
-                  type="number"
-                  id="minGrade"
-                  className="input-field"
-                  value={minGrade}
-                  onChange={(e) => setMinGrade(e.target.value)}
-                  min="0"
-                  max="100"
-                />
+                <div className="config-item md-w-1-2">
+                  <div className="schedule-date-inputs">
+                    <div>
+                      <label htmlFor="scheduleFrom" className="form-label">Schedule From:</label>
+                      <input
+                        type="datetime-local" // Changed type to datetime-local
+                        id="scheduleFrom"
+                        className="input-field"
+                        value={scheduleFrom}
+                        onChange={(e) => setScheduleFrom(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="scheduleTo" className="form-label">Schedule To:</label>
+                      <input
+                        type="datetime-local" // Changed type to datetime-local
+                        id="scheduleTo"
+                        className="input-field"
+                        value={scheduleTo}
+                        onChange={(e) => setScheduleTo(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-            {!passGradeEnabled && (
-              <div className="grading-disabled-message">Pass/Fail grading is disabled. Scores will be recorded without a specific pass threshold.</div>
-            )}
-          </div>
 
-          <div className="test-action-buttons">
-            <button onClick={handleCreateTestSubmit} className="btn-primary">
-              {selectedTestId ? 'Update Test Configuration' : 'Submit Test Configuration'}
-            </button>
-            {selectedTestId && (
-              <>
-                <button onClick={handleScheduleTest} className="btn-secondary">
-                  Schedule Test
-                </button>
-                <button onClick={() => handleDeleteTest(selectedTestId)} className="red-background ml-4">
-                  Delete Test
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+              <div className="grading-section">
+                <h3 className="grading-title">Grading</h3>
+                <div className="grading-checkbox-wrapper">
+                  <input
+                    type="checkbox"
+                    id="passGradeEnabled"
+                    className="accent-CBE220 rounded-sm"
+                    checked={passGradeEnabled}
+                    onChange={(e) => setPassGradeEnabled(e.target.checked)}
+                  />
+                  <label htmlFor="passGradeEnabled" className="form-label">Enable Pass/Fail Grading</label>
+                </div>
+                {passGradeEnabled && (
+                  <div className="grading-min-score">
+                    <span className="form-label">Minimum Pass Score:</span>
+                    <input
+                      type="number"
+                      id="minGrade"
+                      className="input-field"
+                      value={minGrade}
+                      onChange={(e) => setMinGrade(e.target.value)}
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                )}
+                {!passGradeEnabled && (
+                  <div className="grading-disabled-message">Pass/Fail grading is disabled. Scores will be recorded without a specific pass threshold.</div>
+                )}
+              </div>
 
-        <div className="questions-section">
-          <h2 className="questions-title">Questions</h2>
-          {questions.length === 0 ? (
-            <p className="no-questions-message">No questions added yet. Click "Add Question" to start.</p>
-          ) : (
-            <div className="question-list">
-              {questions.map((q) => (
-                <div key={q.id} className="question-card">
-                  <div className="flex-grow">
-                    <p className="question-content">{q.question}</p>
-                 {/* --- CHANGE 2: Conditionally render test cases for coding questions --- */}
-                    {q.type === 'coding' ? (
-                      <div className="coding-question-details">
-                        <h4 className="text-md font-semibold mt-2 mb-1">Test Cases:</h4>
-                        {q.testCases && q.testCases.length > 0 ? (
-                          <ul className="test-case-list">
-                            {q.testCases.map((tc, index) => (
-                              <li key={index} className={`test-case-item ${tc.isHidden ? 'test-case-hidden' : 'test-case-shown'}`}>
-                                <p><strong>Input:</strong> <pre>{tc.input.length > 50 ? tc.input.substring(0, 50) + '...' : tc.input}</pre></p>
-                                <p><strong>Output:</strong> <pre>{tc.output.length > 50 ? tc.output.substring(0, 50) + '...' : tc.output}</pre></p>
-                                <span className={`test-case-status ${tc.isHidden ? 'status-hidden' : 'status-shown'}`}>
-                                  {tc.isHidden ? 'Hidden' : 'Shown'}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
+              <div className="test-action-buttons">
+                <button onClick={handleCreateTestSubmit} className="btn-primary">
+                  {selectedTestId ? 'Update Test Configuration' : 'Submit Test Configuration'}
+                </button>
+                {selectedTestId && (
+                  <button onClick={handleScheduleTest} className="btn-secondary">
+                    Schedule Test
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="questions-section">
+              <h2 className="questions-title">Questions</h2>
+              {questions.length === 0 ? (
+                <p className="no-questions-message">No questions added yet. Click "Add Question" to start.</p>
+              ) : (
+                <div className="question-list">
+                  {questions.map((q) => (
+                    <div key={q.id} className="question-card">
+                      <div className="flex-grow">
+                        <p className="question-content">{q.question}</p>
+                        {q.type === 'coding' ? (
+                          <div className="coding-question-details">
+                            <h4 className="text-md font-semibold mt-2 mb-1">Test Cases:</h4>
+                            {q.testCases && q.testCases.length > 0 ? (
+                              <ul className="test-case-list">
+                                {q.testCases.map((tc, index) => (
+                                  <li key={index} className={`test-case-item ${tc.isHidden ? 'test-case-hidden' : 'test-case-shown'}`}>
+                                    <p><strong>Input:</strong> <pre>{tc.input.length > 50 ? tc.input.substring(0, 50) + '...' : tc.input}</pre></p>
+                                    <p><strong>Output:</strong> <pre>{tc.output.length > 50 ? tc.output.substring(0, 50) + '...' : tc.output}</pre></p>
+                                    <span className={`test-case-status ${tc.isHidden ? 'status-hidden' : 'status-shown'}`}>
+                                      {tc.isHidden ? 'Hidden' : 'Shown'}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-gray-500 text-sm">No test cases defined.</p>
+                            )}
+                          </div>
                         ) : (
-                          <p className="text-gray-500 text-sm">No test cases defined.</p>
+                          q.options && q.options.length > 0 && q.type !== 'descriptive' && (
+                            <ul className="question-options-list">
+                              {q.options.map((opt, index) => (
+                                <li key={index} className={opt.isCorrect ? 'question-option correct' : 'question-option'}>
+                                  {opt.text} {opt.isCorrect && '(Correct)'}
+                                </li>
+                              ))}
+                            </ul>
+                          )
+                        )}
+                        <p className="question-meta">Score: {q.score}</p>
+                        <p className="question-meta">Type: {getDescriptiveQuestionType(q.type)}</p>
+                      </div>
+                      <div className="question-actions">
+                        <button onClick={() => openEditQuestionModal(q)} className="btn-secondary">Edit</button>
+                        <button onClick={() => handleDeleteQuestion(q.id)} className="red-background">Delete</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="add-question-section">
+                <button onClick={() => { setSelectedQuestion(null); setShowQuestionModal(true); }} className="btn-primary" disabled={!selectedTestId}>
+                  Add Question
+                </button>
+                {!selectedTestId && <p className="add-question-message">Save the test configuration first to add questions.</p>}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Scheduled Tests Tab Content */}
+        {activeTab === 'scheduled' && (
+          <div className="scheduled-tests-section">
+            <h2 className="scheduled-tests-title">All Scheduled Tests</h2>
+
+            {scheduledTests.length === 0 ? (
+              <p className="no-scheduled-tests-message">No tests are currently scheduled. Go to "Configure Test" to create and schedule one.</p>
+            ) : (
+              <div className="scheduled-tests-list">
+                {scheduledTests.map(test => (
+                  <div key={test.id} className="test-card-scheduled">
+                    <h3 className="test-name-scheduled">{test.name}</h3>
+                    <p><strong>Time Limit:</strong> {test.timeLimitHrs || '0'} hrs {test.timeLimitMin || '0'} mins</p>
+                    {/* Display formatted date and time */}
+                    <p><strong>Scheduled From:</strong> {formatDateTime(test.scheduleFrom)}</p>
+                    <p><strong>Scheduled To:</strong> {formatDateTime(test.scheduleTo)}</p>
+                    <p><strong>Pass Grade Enabled:</strong> {test.passGradeEnabled ? 'Yes' : 'No'}</p>
+                    {test.passGradeEnabled && <p><strong>Min Pass Score:</strong> {test.minGrade}%</p>}
+                    <p><strong>Questions:</strong> {test.questions.length}</p>
+
+                    <div className="test-actions-scheduled">
+                      <div className='test-actions-left'>
+                        <button onClick={() => { setSelectedTestId(test.id); setActiveTab('configure'); }} className="btn-secondary">
+                          Edit Config
+                        </button>
+                        <button onClick={() => handleDeleteTest(test.id)} className="red-background">
+                          Delete Test
+                        </button>
+                      </div>
+                      <div className="test-actions-right">
+                        {test.status === 'Active' ? (
+                          <span className="status-badge status-active">Currently Active</span>
+                        ) : (
+                          <button
+                            onClick={() => handleStartTestNow(test.id)}
+                            className="btn-primary"
+                          >
+                            Start Now
+                          </button>
                         )}
                       </div>
-                    ) : (
-                      // Existing options rendering for non-coding questions
-                      q.options && q.options.length > 0 && q.type !== 'descriptive' && (
-                        <ul className="question-options-list">
-                          {q.options.map((opt, index) => (
-                            <li key={index} className={opt.isCorrect ? 'question-option correct' : 'question-option'}>
-                              {opt.text} {opt.isCorrect && '(Correct)'}
-                            </li>
-                          ))}
-                        </ul>
-                      )
-                    )}
-                    <p className="question-meta">Score: {q.score}</p>
-                    <p className="question-meta">Type: {getDescriptiveQuestionType(q.type)}</p>
+                    </div>
                   </div>
-                  <div className="question-actions">
-                    <button onClick={() => openEditQuestionModal(q)} className="btn-secondary">Edit</button>
-                    <button onClick={() => handleDeleteQuestion(q.id)} className="red-background">Delete</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="add-question-section">
-            <button onClick={() => { setSelectedQuestion(null); setShowQuestionModal(true); }} className="btn-primary" disabled={!selectedTestId}>
-              Add Question
-            </button>
-            {!selectedTestId && <p className="add-question-message">Save the test configuration first to add questions.</p>}
+                ))}
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
         {showQuestionModal && (
           <QuestionModal
@@ -496,4 +682,4 @@ const CreateTestPage = () => {
   );
 };
 
-export default CreateTestPage;  
+export default CreateTestPage;
