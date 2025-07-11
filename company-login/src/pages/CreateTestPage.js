@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Import useRef
 import QuestionModal from '../components/QuestionModal';
 import CustomAlertDialog from '../components/CustomAlertDialog';
 import './CreateTestPage.css';
@@ -21,6 +21,9 @@ const CreateTestPage = () => {
   const [alertConfig, setAlertConfig] = useState(null);
   const [activeTab, setActiveTab] = useState('configure');
 
+  // Add a ref for the test name input
+  const testNameInputRef = useRef(null);
+
   const getDescriptiveQuestionType = (type) => {
     switch (type) {
       case 'single':
@@ -40,6 +43,10 @@ const CreateTestPage = () => {
     const loadTest = () => {
       if (!selectedTestId) {
         setQuestions([]);
+        // When no test is selected, ensure the form fields are clear (resetForm already handles this)
+        // However, we only want to *reset* the form if a test was previously selected and now isn't.
+        // A simple way is to rely on resetForm being called explicitly by the "New Test" button
+        // or by the submission logic if you change it.
         return;
       }
       const testData = tests.find(test => test.id === selectedTestId);
@@ -53,12 +60,13 @@ const CreateTestPage = () => {
         setPassGradeEnabled(testData.passGradeEnabled || false);
         setQuestions(testData.questions || []);
       } else {
+        // This case would typically only happen if selectedTestId points to a test that was deleted
         setAlertConfig({
-          message: 'Test not found.',
+          message: 'Test not found or was deleted. Starting a new test configuration.',
           type: 'alert',
           onConfirm: () => setAlertConfig(null)
         });
-        resetForm();
+        resetForm(); // Reset if the selected test somehow vanished
       }
     };
     loadTest();
@@ -73,9 +81,12 @@ const CreateTestPage = () => {
     setMinGrade('60');
     setPassGradeEnabled(false);
     setQuestions([]);
-    setSelectedTestId('');
+    setSelectedTestId(''); // Important: Clear the selected ID
     setSelectedQuestion(null);
     setSelectedPresetId('');
+    if (testNameInputRef.current) {
+        testNameInputRef.current.focus(); // Focus on test name for new entry
+    }
   };
 
   const handleCreateTestSubmit = () => {
@@ -86,8 +97,8 @@ const CreateTestPage = () => {
         onConfirm: () => setAlertConfig(null)
       });
       return;
-      }
-        if (scheduleFrom && scheduleTo) {
+    }
+    if (scheduleFrom && scheduleTo) {
       const now = new Date();
       now.setMilliseconds(0);
 
@@ -95,15 +106,14 @@ const CreateTestPage = () => {
       const toDateTime = new Date(scheduleTo);
 
       if (isNaN(fromDateTime.getTime()) || isNaN(toDateTime.getTime())) {
-          setAlertConfig({
-              message: 'Invalid date or time entered for scheduling. Please ensure both "Schedule From" and "Schedule To" are valid.',
-              type: 'alert',
-              onConfirm: () => setAlertConfig(null)
-          });
-          return;
+        setAlertConfig({
+          message: 'Invalid date or time entered for scheduling. Please ensure both "Schedule From" and "Schedule To" are valid.',
+          type: 'alert',
+          onConfirm: () => setAlertConfig(null)
+        });
+        return;
       }
 
-      // 1. Check if 'Schedule From' is in the past
       if (fromDateTime < now) {
         setAlertConfig({
           message: 'The "Schedule From" date and time cannot be in the past when saving the configuration.',
@@ -113,7 +123,6 @@ const CreateTestPage = () => {
         return;
       }
 
-      // 2. Check if 'Schedule From' is strictly before 'Schedule To'
       if (fromDateTime >= toDateTime) {
         setAlertConfig({
           message: 'The "Schedule From" date and time must be strictly before the "Schedule To" date and time when saving the configuration.',
@@ -130,7 +139,7 @@ const CreateTestPage = () => {
       timeLimitHrs: timeLimitHrs,
       timeLimitMin: timeLimitMin,
       scheduleFrom: scheduleFrom,
-      scheduleTo: scheduleTo,     
+      scheduleTo: scheduleTo,    
       minGrade: minGrade,
       passGradeEnabled: passGradeEnabled,
       createdAt: Date.now(),
@@ -139,19 +148,28 @@ const CreateTestPage = () => {
     };
 
     if (selectedTestId) {
+      // This is an update to an existing test
       setTests(tests.map(test => test.id === selectedTestId ? newTest : test));
       setAlertConfig({
-        message: 'Test updated successfully!',
+        message: 'Test updated successfully! The form has been reset for a new test.',
         type: 'alert',
-        onConfirm: () => setAlertConfig(null)
+        onConfirm: () => {
+          setAlertConfig(null);
+          resetForm(); // Reset form after updating
+        }
       });
     } else {
+      // This is a new test creation
       setTests([...tests, newTest]);
-      setSelectedTestId(newTest.id);
+      // NO setSelectedTestId(newTest.id); here if you want to immediately go to a *new* empty test form.
+      // Instead, we just reset the form entirely.
       setAlertConfig({
-        message: 'Test configured successfully! You can now add questions.',
+        message: 'Test configured successfully! The form has been reset for a new test. You can now create another test.',
         type: 'alert',
-        onConfirm: () => setAlertConfig(null)
+        onConfirm: () => {
+          setAlertConfig(null);
+          resetForm(); // Reset form after creating a new test
+        }
       });
     }
   };
@@ -196,6 +214,9 @@ const CreateTestPage = () => {
         setTests(prevTests => prevTests.map(test =>
           test.id === selectedTestId ? { ...test, scheduleFrom, scheduleTo, status: 'Scheduled' } : test
         ));
+        // Option: If you want to stay on the scheduled test after scheduling, don't call resetForm.
+        // If you want to go to a new test config, call resetForm(); here.
+        // For now, let's assume you want to stay on the scheduled test configuration.
       }
     });
   };
@@ -334,6 +355,8 @@ const CreateTestPage = () => {
       setScheduleTo(presetData.scheduleTo || '');
       setMinGrade(presetData.minGrade || '60');
       setPassGradeEnabled(presetData.passGradeEnabled || false);
+      setSelectedTestId(''); // Clear selected test when loading a preset
+      setQuestions([]); // Clear questions as presets are just configurations
       setAlertConfig({
         message: `Preset "${presetData.name}" loaded.`,
         type: 'alert',
@@ -455,6 +478,7 @@ const CreateTestPage = () => {
                   placeholder="Enter your test name"
                   value={testName}
                   onChange={(e) => setTestName(e.target.value)}
+                  ref={testNameInputRef} // Attach the ref here
                 />
               </div>
 
@@ -485,7 +509,7 @@ const CreateTestPage = () => {
                     <div>
                       <label htmlFor="scheduleFrom" className="form-label">Schedule From:</label>
                       <input
-                        type="datetime-local" // Changed type to datetime-local
+                        type="datetime-local"
                         id="scheduleFrom"
                         className="input-field"
                         value={scheduleFrom}
@@ -495,7 +519,7 @@ const CreateTestPage = () => {
                     <div>
                       <label htmlFor="scheduleTo" className="form-label">Schedule To:</label>
                       <input
-                        type="datetime-local" // Changed type to datetime-local
+                        type="datetime-local"
                         id="scheduleTo"
                         className="input-field"
                         value={scheduleTo}
