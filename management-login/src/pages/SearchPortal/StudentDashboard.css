@@ -14,23 +14,29 @@ body {
 
 /* --- Main Dashboard Container --- */
 .dashboard-container {
-    min-height: 100vh;
-    padding: 16px; /* Overall padding around the dashboard content */
-    max-width: 1200px; /* Limits the max width of the dashboard for better readability on large screens */
-    margin: 0 auto; /* Centers the dashboard container horizontally */
-    box-sizing: border-box; /* Ensures padding is included in the element's total width/height */
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* --- Common Card/Section Styling --- */
-/* Applied to main sections like profile, stats, charts */
+.back-button {
+    margin-bottom: 1.5rem;
+}
+
 .card {
-    background-color: #ffffff; /* White background for cards */
-    border-radius: 12px; /* Rounded corners for card elements */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Subtle shadow for depth */
-    padding: 24px; /* Internal padding within each card */
-    margin-bottom: 24px; /* Space between cards/sections */
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 24px;
+    margin-bottom: 24px;
     box-sizing: border-box;
-    overflow: hidden; /* Important for containing charts within rounded borders, preventing content overflow */
+    overflow: hidden;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 /* --- Header Section --- */
@@ -51,14 +57,6 @@ header {
     opacity: 0.8;
 }
 
-/* --- Student Profile Section --- */
-.profile-section {
-    display: flex;
-    flex-direction: column; /* Stack vertically on small screens */
-    align-items: center; /* Center items horizontally */
-    text-align: center; /* Center text */
-    padding: 16px; /* Smaller padding on small screens */
-}
 
 @media (min-width: 640px) { /* Styles applied for screens 640px and wider (tablet) */
     .profile-section {
