@@ -1,13 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f4f6;
+  color: #151603;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  transition: margin-left 0.3s ease-in-out;
+  margin-left: 260px; /* sidebar-width */
+}
+
+.app-container.sidebar-closed .main-content {
+  margin-left: 0px; /* sidebar-width-closed */
+}
+
+.main-header {
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 60px; /* header-height */
+  flex-shrink: 0;
+  background-color: #FEFEFA; /* primary-bg */
+  border-bottom: 1px solid #d1d5db; /* border-color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-color */
+  z-index: 10;
+}
+
+.sidebar-toggle-btn-open {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  color: #151603; /* text-primary */
+}
+
+.sidebar-toggle-btn-open svg {
+  width: 24px;
+  height: 24px;
+}
+
+.main-header-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.content-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+}
+
+/* Common Button Styles */
+.btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary, .btn-confirm {
+    background-color: #CBE220; /* accent-color-dark */
+    color: #151603; /* text-primary */
+}
+.btn-primary:hover, .btn-confirm:hover {
+    background-color: #b9d01f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-secondary {
+    background-color: #56E9B3; /* accent-color-green */
+    color: #151603; /* text-primary */
+}
+.btn-secondary:hover {
+    background-color: #49cba1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Common Form Styles */
+.form-input, .form-select {
+    margin-bottom: 1rem;
+}
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a4b3c; /* text-secondary */
+    margin-bottom: 0.25rem;
+}
+.input-box, .select-box {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: #FEFEFA; /* primary-bg */
+    border: 1px solid #d1d5db; /* border-color */
+    border-radius: 0.5rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    font-size: 0.9rem;
+}
+.input-box:focus, .select-box:focus {
+    border-color: #CBE220; /* accent-color-dark */
+    box-shadow: 0 0 0 3px rgba(203, 226, 32, 0.4);
+}
+
+/* Common Table Styles */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #d1d5db; /* border-color */
+    border-radius: 0.5rem;
+    background-color: #FEFEFA; /* primary-bg */
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #d1d5db; /* border-color */
+    vertical-align: middle;
+}
+.data-table thead th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+/* Common Card/Box Styles */
+.card-box {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #FEFEFA; /* primary-bg */
+    border-radius: 1rem;
+    border: 1px solid #d1d5db; /* border-color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-color */
+}
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #151603; /* text-primary */
+    margin-bottom: 1rem;
 }
