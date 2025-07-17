@@ -1,442 +1,195 @@
-/* App.css */
-
-/* --- General Imports & Base Styles --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6; /* Light gray background matching the image */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.5; /* Standard line height for readability */
-}
-
-/* --- Main Dashboard Container --- */
+/* Main Dashboard Container */
 .dashboard-container {
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #f9fafb; /* Consistent with content-area [cite: 53] */
 }
 
-.back-button {
-    margin-bottom: 1.5rem;
+/* Back Button */
+.btn-back {
+  background: none;
+  border: none;
+  color: #4a4b3c; /* text-secondary [cite: 61] */
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease;
 }
 
-.card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 24px;
-    margin-bottom: 24px;
-    box-sizing: border-box;
-    overflow: hidden;
+.btn-back:hover {
+  color: #151603; /* text-primary [cite: 56] */
 }
 
-.profile-section {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+/* Header */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #fefefa; /* primary-bg [cite: 48, 71] */
+  border-radius: 1rem; /* Consistent with card-box [cite: 71] */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Consistent with card-box [cite: 73] */
+  margin-bottom: 1.5rem;
 }
 
-/* --- Header Section --- */
-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 24px; /* Space below the header */
+.logo-placeholder {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4a4b3c;
 }
 
-.header-logo {
-    font-weight: 700; /* Bold font for the logo text */
-    font-size: 24px; /* Larger font size for the logo */
-    color: #1f2937; /* Dark gray text color */
-    transition: opacity 0.2s ease-in-out;
+.student-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.header-logo:hover{
-    opacity: 0.8;
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #cbe220; /* accent-color-dark [cite: 30, 55] */
+  background-color: #ebf374;
 }
 
-
-@media (min-width: 640px) { /* Styles applied for screens 640px and wider (tablet) */
-    .profile-section {
-        flex-direction: row; /* Layout horizontally on larger screens */
-        text-align: left; /* Align text to the left */
-        align-items: center;
-        padding: 24px; /* Larger padding on larger screens */
-        column-gap: 24px; /* Space between columns */
-    }
+.student-name-header {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  color: #151603; /* text-primary [cite: 74] */
 }
 
-.profile-image-container {
-    flex-shrink: 0; /* Prevents the image from shrinking */
+.student-details p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4a4b3c; /* text-secondary [cite: 28, 61] */
 }
 
-.profile-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 9999px; /* Makes the image perfectly round */
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    border: 2px solid #3b82f6; /* Blue border around the profile image */
+/* Shared Card Styles */
+.stat-card-small,
+.stat-card,
+.chart-card {
+  background-color: #fefefa; /* primary-bg [cite: 48, 71] */
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-color [cite: 49, 73] */
+  border: 1px solid #d1d5db; /* border-color [cite: 48, 63] */
 }
 
-.profile-name {
-    font-size: 20px; /* Default font size for the student's name */
-    font-weight: 600; /* Semi-bold font weight */
-    color: #1f2937; /* Dark gray text color */
-    margin-top: 10px; /* Space below the image on small screens */
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #151603; /* text-primary [cite: 74] */
 }
 
-@media (min-width: 640px) {
-    .profile-name {
-        font-size: 24px; /* Larger font size on larger screens */
-        margin-top: 0; /* Remove top margin when laid out horizontally */
-    }
+.stat-title {
+  font-size: 0.9rem;
+  color: #4a4b3c;
+  margin: 0 0 0.25rem 0;
 }
 
-.profile-contact-info {
-    display: flex;
-    flex-direction: column; /* Stack contact info vertically on small screens */
-    align-items: center;
-    margin-top: 8px; /* Space above contact info */
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #151603;
+  margin: 0;
 }
 
-@media (min-width: 640px) {
-    .profile-contact-info {
-        flex-direction: row; /* Layout contact info horizontally on larger screens */
-        column-gap: 16px; /* Space between contact items */
-    }
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    color: #4b5563; /* Gray text color for contact details */
-    font-size: 14px; /* Smaller font size for contact details */
-    margin-top: 4px; /* Space between stacked contact items */
-}
-
-@media (min-width: 640px) {
-    .contact-item:first-child {
-        margin-top: 0; /* Remove top margin for the first item when horizontal */
-    }
-}
-
-.contact-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px; /* Space between icon and text */
-    stroke: currentColor; /* Makes the SVG icon inherit the parent's color */
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-/* --- Summary Cards Section --- */
-.summary-cards-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Single column on extra small screens */
-    gap: 16px; /* Gap between grid items */
-    margin-bottom: 20px;
-}
-
-@media (min-width: 640px) {
-    .summary-cards-grid {
-        grid-template-columns: repeat(2, 1fr); /* Two columns on small screens */
-    }
-}
-
-@media (min-width: 1024px) { /* Styles applied for screens 1024px and wider (large/desktop) */
-    .summary-cards-grid {
-        grid-template-columns: repeat(4, 1fr); /* Four columns on large screens */
-    }
-}
-
-.label-value p{
-    margin: 0;
-}
-.summary-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    column-gap: 12px; /* Space between icon/text within the card */
-}
-
-.summary-icon-container {
-    padding: 8px; /* Padding around the icon */
-    border-radius: 8px; /* Slightly rounded corners for the icon background */
-    display: flex; /* Flexbox for centering the SVG icon */
-    align-items: center;
-    justify-content: center;
-}
-
-.summary-icon {
-    width: 24px;
-    height: 24px;
-    stroke: currentColor;
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-/* Specific background and text colors for summary icon containers */
-.bg-blue-100 { background-color: #e0f2fe; } /* Light blue background */
-.text-blue-600 { color: #2563eb; } /* Darker blue text/icon color */
-.bg-green-100 { background-color: #d1fae5; } /* Light green background */
-.text-green-600 { color: #059669; } /* Darker green text/icon color */
-.bg-yellow-100 { background-color: #fef3c7; } /* Light yellow background */
-.text-yellow-600 { color: #d97706; } /* Darker yellow text/icon color */
-.bg-purple-100 { background-color: #f3e8ff; } /* Light purple background */
-.text-purple-600 { color: #9333ea; } /* Darker purple text/icon color */
-
-.summary-label {
-    color: #6b7280; /* Gray text for the label */
-    font-size: 14px;
-}
-
-.summary-value {
-    font-weight: 600; /* Semi-bold font for the value */
-    font-size: 18px;
-    color: #1f2937; /* Dark gray text for the value */
-}
-
-/* --- Section Titles --- */
-.section-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 16px; /* Space below section titles */
-}
-
-/* --- NEW: Main Stats and Charts Section (the big combined box) --- */
-.main-stats-charts-section {
-    /* Inherits .card styling for the overall box */
-    display: grid;
-    /* Define grid rows for stacking sections */
-    grid-template-rows: auto auto 1fr; /* Overall Stats, Divider, Charts & Summary */
-    row-gap: 24px; /* Space between the rows */
-}
-
-/* --- Overall Stats Sub-Section within the combined box --- */
-
-.overall-stats-sub-section h3{
-  margin-bottom: 25px;
-}
-.overall-stats-grid-new {
-    display: flex; /* Use flexbox for a single row */
-    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
-    justify-content: space-between; /* Distribute items evenly */
-    gap: 16px; /* Space between items */
-}
-
-.stat-item-new {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 200px; /* Allow items to grow/shrink, with a base of 200px for responsiveness */
-    text-align: left; /* Align text to the left as in the image */
-    background-color: #f9fafb;
-    border-radius: 8px;
-    padding:10px;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    height: 65px;
-}
-
-.stat-item-new .label {
-    color: #6b7280;
-    font-size: 14px;
-    margin: 0;
-}
-
-.stat-item-new .value {
-    font-weight: 600;
-    font-size: 24px;
-    color: #1f2937;
-    margin-top: 4px;
-}
-
-/* --- Section Divider --- */
-.section-divider {
-    border: none; /* Remove default border */
-    border-top: 1px solid #e5e7eb; /* Light gray line */
-    margin: 0; /* Reset default margins */
-}
-
-/* --- Charts and Summary Grid (for Success Vs Fail & Marks Summary side-by-side) --- */
-.charts-and-summary-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Stack on small screens */
-    gap: 24px; /* Space between chart and summary when stacked */
-}
-
-@media (min-width: 768px) {
-    .charts-and-summary-grid {
-        grid-template-columns: 1fr 1fr; /* Side-by-side on larger screens */
-    }
-    .chart-pie-specific {
-        border-right: 1px solid #e5e7eb; /* Divider line between pie chart and marks summary */
-        padding-right: 24px; /* Add padding to the right of the pie chart */
-    }
-    .chart-marks-specific {
-        padding-left: 24px; /* Add padding to the left of the marks summary */
-    }
-}
-
-
-/* --- Marks Summary --- */
-.marks-list {
-    display: flex;
-    flex-direction: column;
-    row-gap: 8px; /* Space between mark items */
-}
-
-.marks-summary-item {
-    display: flex;
-    justify-content: space-between; /* Pushes subject and score to opposite ends */
-    align-items: center;
-    background-color: #f9fafb; /* Very light gray background for each item */
-    padding: 10px 12px; /* Padding for each item */
-    border-radius: 6px; /* Rounded corners for marks items */
-}
-
-.marks-summary-item .subject {
-    color: #374151; /* Darker gray for subject text */
-    font-weight: 500;
-}
-
-.marks-summary-item .score {
-    font-weight: 600;
-    color: #1f2937;
-}
-
-/* --- Recharts Specific Styling (Legends & Grid) --- */
-.recharts-legend-wrapper ul {
-    display: flex;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    flex-wrap: wrap;
-}
-
-.recharts-legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #4b5563;
-}
-
-.recharts-surface .recharts-legend-item rect {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-    margin-right: 6px;
-}
-
-.recharts-cartesian-grid line {
-    stroke: #E5E7EB;
-    stroke-dasharray: 3 3;
-}
-
-/* --- Chart Container Specific Styling --- */
-.chart-container {
-    width: 100%;
-    height: 300px; /* Default height for line chart and bar chart containers */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-/* Specific height for PieChart container to match image */
-.chart-pie-specific {
-    height: 250px;
-   min-height: 250px;
-   /* flex-shrink: 0;
-   box-sizing: border-box; */
-}
-
-/* Make sure inner chart containers don't have extra padding as they are within the main card's padding */
-.chart-pie-specific .section-title,
-.chart-marks-specific .section-title {
-    margin-top: 0; /* Remove top margin if the charts-and-summary-grid handles spacing */
-}
-
-/* Specific styling for the Questions Attempted chart to ensure label placement */
-.questions-attempted-chart .recharts-label {
-    fill: #6b7280;
-    font-size: 13px;
-}
-
-/* --- Learning Progress Grid --- */
+/* Grids */
+.quick-stats-grid,
+.main-dashboard-grid,
+.bottom-row-grid,
+.overall-stats-grid,
 .learning-progress-grid {
-    display: grid;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.quick-stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.main-dashboard-grid {
+  grid-template-columns: 2fr 1fr;
+  margin-bottom: 1.5rem;
+}
+
+.bottom-row-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.dashboard-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Specific Component Styles */
+.stat-card.large-card {
+  flex-grow: 1;
+}
+
+.overall-stats-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.learning-progress-grid {
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: center;
+}
+
+.learning-progress-grid .stat-value {
+  font-size: 1.5rem;
+}
+
+.marks-summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.marks-summary-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.marks-summary-list li:last-child {
+  border-bottom: none;
+}
+
+.marks-summary-list span:first-child {
+  font-weight: 500;
+  color: #4a4b3c;
+}
+
+.marks-summary-list span:last-child {
+  font-weight: 600;
+  color: #151603;
+}
+
+.chart-wrapper,
+.chart-wrapper-donut {
+  height: 250px;
+  position: relative;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .main-dashboard-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-    text-align: center;
-    margin-top: 16px;
+  }
 }
 
-@media (min-width: 640px) {
-    .learning-progress-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-.progress-item {
-    display: flex;
+@media (max-width: 768px) {
+  .dashboard-header,
+  .student-identity {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-}
-
-.progress-label {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-.progress-value {
-    font-weight: 700;
-    font-size: 24px;
-    color: #1f2937;
-    margin-top: 4px;
-}
-
-.progress-icon-circle {
-    padding: 8px;
-    border-radius: 9999px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.progress-icon-circle.orange { background-color: #fff7ed; color: #f97316; }
-.progress-icon-circle.blue { background-color: #e0f2fe; color: #2563eb; }
-
-/* --- Chart Footer Label (e.g., "Activities") --- */
-.chart-footer-label {
     text-align: center;
-    color: #6b7280;
-    font-size: 14px;
-    margin-top: 10px;
+  }
 }
-
-/* .back-button{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    border-radius: 100px;
-    background-color: #ffff;
-    border: none;
-} */

@@ -1,95 +1,223 @@
-import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, LineChart, Line } from 'recharts';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFire, faPenToSquare, faCertificate } from '@fortawesome/free-solid-svg-icons';
-import './StudentDashboard.css';
+import React from "react";
+import { Doughnut, Bar, Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+} from "chart.js";
+import "./StudentDashboard.css";
 
-// This component uses dummy data for demonstration within the dashboard view.
-const dummyStudentData = {
-    universityRank: '#80',
-    batchRank: '#30',
-    score: '1200',
-    percentageScore: '78.90',
-    totalScore: 1200,
-    totalChallenges: 90,
-    totalSubmissions: 1600,
-    totalTimeSpent: '3d 7hr 40min',
-    successFailData: [
-        { name: 'Success', value: 65, color: '#4CAF50' },
-        { name: 'Partial', value: 20, color: '#FFC107' },
-        { name: 'Fail', value: 15, color: '#F44336' },
-    ],
-    marksSummary: [
-        { subject: 'Aptitude', score: 12345 },
-        { subject: 'Verbal', score: 12345 },
-        { subject: 'Reasoning', score: 12345 },
-        { subject: 'C language', score: 12345 },
-    ],
-    questionsAttempted: [
-        { date: 'Feb-3', questions: 10 },
-        { date: 'Feb-4', questions: 12 },
-        { date: 'Feb-5', questions: 15 },
-        { date: 'Feb-6', questions: 13 },
-        { date: 'Feb-7', questions: 18 },
-        { date: 'Feb-8', questions: 20 },
-        { date: 'Feb-9', questions: 22 },
-    ],
-    learningProgress: {
-        problemsSolved: 800,
-        longestStreak: '3 Days',
-        certificates: '5',
-    },
-    activitiesData: [
-        { name: 'Dec2', C: 10, Java: 8 },
-        { name: 'Dec3', C: 12, Java: 10 },
-        { name: 'Dec4', C: 8, Java: 6 },
-        { name: 'Dec5', C: 11, Java: 9 },
-        { name: 'Dec6', C: 13, Java: 11 },
-    ],
-};
-
-const MetricCard = ({ label, value, icon, iconBgClass, iconTextClass }) => (
-    <div className="summary-card">
-        {icon && (
-            <div className={`summary-icon-container ${iconBgClass} ${iconTextClass}`}>
-                {icon}
-            </div>
-        )}
-        <div className='label-value'>
-            <p className="summary-label">{label}</p>
-            <p className="summary-value">{value}</p>
-        </div>
-    </div>
+// Register all necessary components for Chart.js
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title
 );
 
-function StudentDashboard({ student, onBackClick }) {
-    const displayData = { ...dummyStudentData, ...student };
-    const COLORS = displayData.successFailData.map(d => d.color);
+const StudentDashboard = ({ student, onBackClick }) => {
+  if (!student) {
+    return <div className="no-data">No student data available.</div>;
+  }
 
-    return (
-        <div className="dashboard-container">
-            <button className="btn btn-secondary back-button" onClick={onBackClick}>&larr; Back to List</button>
-            
-            <section className="card profile-section">
-                <div className="profile-image-container">
-                    <img src={displayData.imageUrl || `https://placehold.co/100x100/A8F374/333?text=${displayData.name.substring(0,2)}`} alt={displayData.name} className="profile-image" />
+  // --- Chart Data ---
+
+  // Data for Success vs Fail Donut Chart
+  const successFailData = {
+    labels: ["Success", "Partial", "Fail"],
+    datasets: [
+      {
+        data: [
+          student.successCount || 120,
+          student.partialCount || 30,
+          student.failCount || 10,
+        ],
+        backgroundColor: ["#56E9B3", "#EBF374", "#e74c3c"],
+        borderColor: ["#FEFEFA"],
+        borderWidth: 4,
+        hoverOffset: 4,
+      },
+    ],
+  };
+
+  // Data for Questions Attempted Line Chart
+  const questionsAttemptedData = {
+    labels: ["Feb-3", "Feb-4", "Feb-5", "Feb-6", "Feb-7", "Feb-8", "Feb-9"],
+    datasets: [
+      {
+        label: "Questions",
+        data: [10, 12, 15, 13, 18, 20, 22],
+        fill: false,
+        borderColor: "#4a4b3c",
+        backgroundColor: "#CBE220",
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+      },
+    ],
+  };
+
+  // Data for Languages Used Bar Chart
+  const languagesUsedData = {
+    labels: ["Dec2", "Dec3", "Dec4", "Dec5", "Dec6"],
+    datasets: [
+      {
+        label: "C",
+        data: [11, 12, 5, 12, 13],
+        backgroundColor: "#56E9B3",
+      },
+      {
+        label: "Java",
+        data: [7, 9, 8, 8, 10],
+        backgroundColor: "#CBE220",
+      },
+    ],
+  };
+
+  // --- Component JSX ---
+
+  return (
+    <div className="dashboard-container">
+      <button onClick={onBackClick} className="btn-back">
+        &larr; Back to Student List
+      </button>
+
+      {/* Header Section */}
+      <header className="dashboard-header">
+        <div className="logo-placeholder">LOGO</div>
+        <div className="student-identity">
+          <img
+            src={
+              student.imageUrl ||
+              `https://api.dicebear.com/6.x/initials/svg?seed=${
+                student.name || "S"
+              }`
+            }
+            alt="profile avatar"
+            className="profile-avatar"
+          />
+          <div className="student-details">
+            <h1 className="student-name-header">{student.name}</h1>
+            <p>
+              {student.email} | {student.contact}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* Quick Stats Cards */}
+      <div className="quick-stats-grid">
+        <div className="stat-card-small">
+          <p className="stat-title">University rank</p>
+          <p className="stat-value">#{student.universityRank || 80}</p>
+        </div>
+        <div className="stat-card-small">
+          <p className="stat-title">Batch rank</p>
+          <p className="stat-value">#{student.batchRank || 30}</p>
+        </div>
+        <div className="stat-card-small">
+          <p className="stat-title">Score</p>
+          <p className="stat-value">{student.score || 1200}</p>
+        </div>
+        <div className="stat-card-small">
+          <p className="stat-title">Percentage Score</p>
+          <p className="stat-value">{student.percentageScore || 78.9}%</p>
+        </div>
+      </div>
+
+      {/* Main Dashboard Grid */}
+      <div className="main-dashboard-grid">
+        {/* Left Column */}
+        <div className="dashboard-col">
+          <div className="stat-card large-card">
+            <h2 className="card-title">Overall Stats</h2>
+            <div className="overall-stats-grid">
+              <div>
+                <p className="stat-title">Total Score</p>
+                <p className="stat-value">{student.totalScore || 1200}</p>
+              </div>
+              <div>
+                <p className="stat-title">Total Challenges</p>
+                <p className="stat-value">{student.totalChallenges || 90}</p>
+              </div>
+              <div>
+                <p className="stat-title">Total Submissions</p>
+                <p className="stat-value">{student.totalSubmissions || 1600}</p>
+              </div>
+              <div>
+                <p className="stat-title">Total Time Spent</p>
+                <p className="stat-value">{student.timeSpent || "3d 7hr 40m"}</p>
+              </div>
+            </div>
+          </div>
+          <div className="chart-card">
+            <h2 className="card-title">Success vs Fail</h2>
+            <div className="chart-wrapper-donut">
+              <Doughnut data={successFailData} options={{ maintainAspectRatio: false }}/>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="dashboard-col">
+          <div className="stat-card large-card">
+            <h2 className="card-title">Marks Summary</h2>
+            <ul className="marks-summary-list">
+              <li><span>Aptitude</span><span>{student.aptitude || 12345}</span></li>
+              <li><span>Verbal</span><span>{student.verbal || 12345}</span></li>
+              <li><span>Reasoning</span><span>{student.reasoning || 12345}</span></li>
+              <li><span>C language</span><span>{student.cLanguage || 12345}</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="bottom-row-grid">
+        <div className="chart-card">
+          <h2 className="card-title">Questions Attempted</h2>
+          <div className="chart-wrapper">
+             <Line data={questionsAttemptedData} options={{ maintainAspectRatio: false }}/>
+          </div>
+        </div>
+        <div className="stat-card">
+            <h2 className="card-title">Learning Progress</h2>
+            <div className="learning-progress-grid">
+                 <div>
+                    <p className="stat-title">Problems solved</p>
+                    <p className="stat-value">{student.problemsSolved || 800}</p>
                 </div>
                 <div>
-                    <h2 className="profile-name">{displayData.name}</h2>
-                    <div className="profile-contact-info">
-                        <span className="contact-item">
-                            <svg className="contact-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                            {displayData.email}
-                        </span>
-                        <span className="contact-item">
-                            <svg className="contact-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-3.67-3.67A19.79 19.79 0 0 1 2 6.18 2 2 0 0 1 4.18 4h3a2 2 0 0 1 2 1.72l.44 4.51a2 2 0 0 1-1.28 2.12l-1.5 1.25a1 1 0 0 0-.3.73v.79a1 1 0 0 0 .56.89 10 10 0 0 0 4.19 4.19 1 1 0 0 0 .89.56h.79a1 1 0 0 0 .73-.3l1.25-1.5a2 2 0 0 1 2.12-1.28l4.51.44A2 2 0 0 1 22 16.92z"/></svg>
-                            {displayData.phone || 'N/A'}
-                        </span>
-                    </div>
+                    <p className="stat-title">Longest Streak</p>
+                    <p className="stat-value">{student.longestStreak || 3} Days</p>
                 </div>
-            </section>
-            {/* Other sections using displayData */}
+                <div>
+                    <p className="stat-title">Certificates</p>
+                    <p className="stat-value">{student.certificates || 5}</p>
+                </div>
+            </div>
         </div>
-    );
-}
+         <div className="chart-card">
+            <h2 className="card-title">Languages Used</h2>
+            <div className="chart-wrapper">
+                <Bar data={languagesUsedData} options={{ maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true }}}}/>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default StudentDashboard;

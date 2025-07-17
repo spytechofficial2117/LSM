@@ -3,9 +3,11 @@ import Studentcard from './StudentCard';
 import './App.css';
 import SearchBar from './searchBar';
 import StudentDashboard from './StudentDashboard';
+import { useUsers } from '../../context/UserContext';
 
 function SearchPortalApp() {
-  const [students, setStudents] = useState([]); // Data is now empty
+  const { users } = useUsers();
+  const [students, setStudents] = useState([]);
   const [appliedBranch, setAppliedBranch] = useState('All');
   const [appliedYear, setAppliedYear] = useState('All');
   const [searchResults, setSearchResults] = useState([]);
@@ -13,16 +15,14 @@ function SearchPortalApp() {
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
-    // In a real app, you might fetch this from an API or get it from parent state
-    const users = JSON.parse(localStorage.getItem('users')) || [];
     const studentUsers = users.filter(user => user.role === 'Student');
     setStudents(studentUsers);
-  }, []);
+  }, [users]);
 
   useEffect(() => {
     let filtered = students;
     if (appliedBranch !== 'All') {
-      filtered = filtered.filter(student => student.branch === appliedBranch);
+      filtered = filtered.filter(student => student.department === appliedBranch);
     }
     if (appliedYear !== 'All') {
       filtered = filtered.filter(student => student.year === appliedYear);
@@ -35,12 +35,14 @@ function SearchPortalApp() {
       );
     }
     setSearchResults(filtered);
-  }, [appliedBranch, appliedYear, searchQuery, students]);
+  }, [students, appliedBranch, appliedYear, searchQuery]);
 
-  const handleResetFilters = () => {
-    setAppliedBranch('All');
-    setAppliedYear('All');
-    setSearchQuery('');
+  const handleStudentCardClick = (student) => {
+    setSelectedStudent(student);
+  };
+
+  const handleBackToList = () => {
+    setSelectedStudent(null);
   };
 
   const handleApplyFilters = (branch, year) => {
@@ -48,13 +50,11 @@ function SearchPortalApp() {
     setAppliedYear(year);
   };
 
-  const handleStudentCardClick = (student) => {
-    setSelectedStudent(student);
-  }
-
-  const handleBackToList = () => {
-    setSelectedStudent(null);
-  }
+  const handleResetFilters = () => {
+    setAppliedBranch('All');
+    setAppliedYear('All');
+    setSearchQuery('');
+  };
 
   return (
     <div className="search-portal-container">
@@ -88,4 +88,5 @@ function SearchPortalApp() {
     </div>
   );
 }
+
 export default SearchPortalApp;
