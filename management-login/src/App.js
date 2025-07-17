@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import { MenuIcon } from './components/Icons';
@@ -11,58 +11,7 @@ import BatchUpdates from './pages/UserManagement/pages/BatchUpdates';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [users, setUsers] = useState([]);
   const location = useLocation();
-
-  // Load users from localStorage on initial render
-  useEffect(() => {
-    try {
-      const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-      setUsers(storedUsers);
-    } catch (error) {
-      console.error("Failed to parse users from localStorage", error);
-      setUsers([]);
-    }
-  }, []);
-
-  // Persist users to localStorage whenever they change
-  const persistUsers = (updatedUsers) => {
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-    setUsers(updatedUsers);
-  };
-
-  const addUser = (newUser) => {
-    setUsers((prevUsers) => {
-      const updatedUsers = [...prevUsers, { id: `user-${Date.now()}-${Math.random()}`, status: 'Active', ...newUser }];
-      persistUsers(updatedUsers);
-      return updatedUsers;
-    });
-  };
-
-  const addUsers = (newUsers) => {
-    setUsers((prevUsers) => {
-      const usersToAdd = newUsers.map(user => ({
-        ...user,
-        id: `user-${Date.now()}-${Math.random()}`,
-        status: 'Active'
-      }));
-      const updatedUsers = [...prevUsers, ...usersToAdd];
-      persistUsers(updatedUsers);
-      return updatedUsers;
-    });
-  };
-
-  const updateUsers = (updatedUsersList) => {
-    persistUsers(updatedUsersList);
-  };
-
-  const removeUsers = (userIdsToRemove) => {
-    setUsers((prevUsers) => {
-      const updatedUsers = prevUsers.filter(user => !userIdsToRemove.includes(user.id));
-      persistUsers(updatedUsers);
-      return updatedUsers;
-    });
-  };
 
   const getPageTitle = () => {
     const path = location.pathname;
@@ -89,9 +38,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/search-portal" replace />} />
             <Route path="/search-portal" element={<SearchPortal />} />
-            <Route path="/user-management/account-creation" element={<AccountCreation addUser={addUser} addUsers={addUsers} users={users} removeUsers={removeUsers} updateUsers={updateUsers} />} />
-            <Route path="/user-management/permission-modifications" element={<PermissionModifications users={users} updateUsers={updateUsers} />} />
-            <Route path="/user-management/batch-updates" element={<BatchUpdates users={users} updateUsers={updateUsers} removeUsers={removeUsers} />} />
+            <Route path="/user-management/account-creation" element={<AccountCreation />} />
+            <Route path="/user-management/permission-modifications" element={<PermissionModifications />} />
+            <Route path="/user-management/batch-updates" element={<BatchUpdates />} />
             <Route path="*" element={<Navigate to="/search-portal" replace />} />
           </Routes>
         </div>

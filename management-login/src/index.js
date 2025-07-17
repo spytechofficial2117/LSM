@@ -1,17 +1,18 @@
+// src/index.js
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import ReactDOM from 'react-dom/client'; // ✅ use 'react-dom/client' instead of 'react-dom'
 import App from './App';
 import './index.css';
+import { BrowserRouter } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
 
-const container = document.getElementById('root');
-const root = createRoot(container);
-
-// The BrowserRouter should only wrap your App component once, at the highest level.
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </UserProvider>
   </React.StrictMode>
 );
