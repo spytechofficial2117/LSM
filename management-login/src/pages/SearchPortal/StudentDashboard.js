@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Doughnut, Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,7 +15,7 @@ import {
 } from "chart.js";
 import "./StudentDashboard.css";
 
-// Register all necessary components for Chart.js
+
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -28,6 +29,7 @@ ChartJS.register(
 );
 
 const StudentDashboard = ({ student, onBackClick }) => {
+
   if (!student) {
     return <div className="no-data">No student data available.</div>;
   }
@@ -219,5 +221,5 @@ const StudentDashboard = ({ student, onBackClick }) => {
     </div>
   );
 };
-
 export default StudentDashboard;
+
